@@ -72,27 +72,25 @@ const Dashboard: React.FC = () => {
   };
 
   const KpiCard = ({ title, value, icon, trend, subtext, colorClass, bgClass, borderColor }: any) => (
-    <Card className={`relative overflow-hidden border-l-4 ${borderColor} hover:shadow-lg transition-all duration-200`}>
-      <CardContent className="p-8">
-        <div className="flex justify-between items-start gap-6">
-          <div className="flex-1 min-w-0 flex flex-col justify-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-5">{title}</p>
-            <div className="flex items-center gap-4 mb-4">
-               <h3 className="text-5xl font-extrabold tracking-tight leading-none">{loading ? <Skeleton className="h-14 w-28 inline-block" /> : value}</h3>
-               {trend !== undefined && !loading && (
-                 <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-3 py-1.5 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
-                   {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
-                 </span>
-               )}
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">{loading ? <Skeleton className="h-4 w-36" /> : subtext}</p>
+    <div className={`relative overflow-hidden border-l-4 ${borderColor} bg-white rounded-lg p-8 shadow-sm hover:shadow-md transition-all duration-200`}>
+      <div className="flex justify-between items-center gap-6">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-6">{title}</p>
+          <div className="flex items-center gap-4 mb-5">
+             <h3 className="text-6xl font-extrabold tracking-tight leading-none">{loading ? <Skeleton className="h-16 w-32 inline-block" /> : value}</h3>
+             {trend !== undefined && !loading && (
+               <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-3 py-1.5 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
+                 {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
+               </span>
+             )}
           </div>
-          <div className={`p-4 rounded-xl ${bgClass} ${colorClass} shadow-sm flex-shrink-0`}>
-            <i className={`fas ${icon} text-2xl`}></i>
-          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed">{loading ? <Skeleton className="h-4 w-36" /> : subtext}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className={`p-4 rounded-xl ${bgClass} ${colorClass} shadow-sm flex-shrink-0`}>
+          <i className={`fas ${icon} text-2xl`}></i>
+        </div>
+      </div>
+    </div>
   );
 
   return (
@@ -178,8 +176,8 @@ const Dashboard: React.FC = () => {
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#64748b" stopOpacity={0.2}/>
+                          <stop offset="95%" stopColor="#64748b" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -203,12 +201,12 @@ const Dashboard: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                           backgroundColor: 'white'
                         }}
-                        cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }}
+                        cursor={{ stroke: '#64748b', strokeWidth: 2, strokeDasharray: '5 5' }}
                       />
                       <Area 
                         type="monotone" 
                         dataKey="visits" 
-                        stroke="#3b82f6" 
+                        stroke="#64748b" 
                         strokeWidth={2.5} 
                         fill="url(#colorVisits)" 
                       />
