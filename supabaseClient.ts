@@ -1,3 +1,4 @@
+
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Business, Category, AnalyticsSummary, VisitLog } from './types';
 
@@ -135,4 +136,36 @@ export const getRecentVisits = async (limit = 20): Promise<VisitLog[]> => {
   const { data, error } = await supabase.from('visit_logs').select('*').order('visited_at', { ascending: false }).limit(limit);
   if (error) return [];
   return data;
+};
+
+// New function for full analytics
+export const getAllVisitLogs = async (limit = 500): Promise<VisitLog[]> => {
+  const { data, error } = await supabase
+    .from('visit_logs')
+    .select('*')
+    .order('visited_at', { ascending: false })
+    .limit(limit);
+  if (error) return [];
+  return data;
+};
+
+// Get Category Distribution Stats
+export const getCategoryStats = async (): Promise<{name: string, value: number}[]> => {
+  const { data, error } = await supabase.from('businesses').select('category');
+  
+  if (error) return [];
+  
+  // Need to fetch category names to map IDs
+  const { data: categories } = await supabase.from('categories').select('id, name');
+  const catMap = new Map(categories?.map(c => [c.id, c.name]));
+
+  const counts: Record<string, number> = {};
+  data.forEach(b => {
+    const name = catMap.get(b.category) || 'Other';
+    counts[name] = (counts[name] || 0) + 1;
+  });
+
+  return Object.entries(counts)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
 };
