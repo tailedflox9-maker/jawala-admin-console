@@ -17,17 +17,17 @@ const Layout: React.FC<LayoutProps> = ({ children, user, currentView, onNavigate
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen w-screen bg-background flex overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-card hidden md:flex flex-col">
-        <div className="p-6 border-b flex items-center gap-2">
+      <aside className="w-64 border-r bg-card hidden md:flex flex-col h-full flex-shrink-0">
+        <div className="p-6 border-b flex items-center gap-2 flex-shrink-0">
            <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-bold">
              J
            </div>
            <span className="font-bold text-lg">Jawala Admin</span>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-line' },
             { id: 'businesses', label: 'Businesses', icon: 'fa-store' },
@@ -48,7 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, currentView, onNavigate
           ))}
         </nav>
 
-        <div className="p-4 border-t">
+        <div className="p-4 border-t flex-shrink-0 bg-card">
           <div className="flex items-center gap-3 px-2 mb-4">
              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
                 <i className="fas fa-user text-xs"></i>
@@ -65,9 +65,9 @@ const Layout: React.FC<LayoutProps> = ({ children, user, currentView, onNavigate
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Mobile Header */}
-        <header className="h-14 border-b flex items-center justify-between px-4 md:hidden bg-card">
+        <header className="h-14 border-b flex items-center justify-between px-4 md:hidden bg-card flex-shrink-0 z-20">
            <span className="font-bold">Jawala Admin</span>
            <Button variant="ghost" size="icon" onClick={handleLogout}>
               <i className="fas fa-sign-out-alt"></i>
@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, currentView, onNavigate
         </header>
 
         {/* Navigation (Mobile) */}
-        <div className="md:hidden flex border-b overflow-x-auto bg-card">
+        <div className="md:hidden flex border-b overflow-x-auto bg-card flex-shrink-0 z-20">
            {['dashboard', 'businesses', 'analytics'].map(id => (
              <button
                key={id}
@@ -89,8 +89,11 @@ const Layout: React.FC<LayoutProps> = ({ children, user, currentView, onNavigate
            ))}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
-           {children}
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+           <div className="max-w-[1600px] mx-auto">
+             {children}
+           </div>
         </div>
       </main>
     </div>
