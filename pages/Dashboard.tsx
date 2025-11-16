@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { getAnalyticsSummary, getRecentVisits, getLiveUsersCount, getRealTrafficData, fetchBusinesses, getHourlyVisitsToday } from '../supabaseClient';
 import { AnalyticsSummary, VisitLog, Business } from '../types';
@@ -12,6 +13,7 @@ const Dashboard: React.FC = () => {
   const [hourlyData, setHourlyData] = useState<{hour: string, visits: number}[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAllActivity, setShowAllActivity] = useState(false);
 
   // Derived Metrics
   const [trends, setTrends] = useState({ visits: 0, users: 0 });
@@ -217,7 +219,7 @@ const Dashboard: React.FC = () => {
 
         {/* Live Feed Column */}
         <Card className="md:col-span-3 lg:col-span-2 flex flex-col h-[500px] md:h-auto sticky top-0">
-          <CardHeader className="pb-3 pt-4 border-b bg-muted/10">
+          <CardHeader className="pb-3 pt-4 border-b bg-muted/10 flex-shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">Live Feed</CardTitle>
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
@@ -227,8 +229,8 @@ const Dashboard: React.FC = () => {
           <CardContent className="flex-1 overflow-y-auto pr-1 custom-scrollbar p-0">
              <div className="divide-y">
                {loading ? Array(5).fill(0).map((_, i) => <div key={i} className="p-4"><Skeleton className="h-10 w-full" /></div>) : 
-                 recentVisits.map((visit, i) => (
-                 <div key={i} className="flex gap-3 items-start group p-3 hover:bg-muted/30 transition-colors">
+                 recentVisits.slice(0, showAllActivity ? undefined : 5).map((visit, i) => (
+                 <div key={i} className="flex gap-3 items-start group p-3 hover:bg-muted/30 transition-colors animate-fadeInUp">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5 shadow-sm border ${visit.user_name ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-gray-100 text-gray-500 border-gray-200'}`}>
                        {visit.user_name ? visit.user_name.substring(0, 2).toUpperCase() : 'G'}
                     </div>
@@ -246,16 +248,25 @@ const Dashboard: React.FC = () => {
                     </div>
                  </div>
                ))}
-               {recentVisits.length === 0 && !loading && (
+               {!loading && recentVisits.length === 0 && (
                  <div className="text-center py-10 text-muted-foreground text-sm">No activity yet</div>
                )}
              </div>
+             {!loading && recentVisits.length > 5 && !showAllActivity && (
+               <button 
+                 onClick={() => setShowAllActivity(true)}
+                 className="w-full py-3 text-xs font-medium text-primary hover:bg-muted/50 transition-colors border-t flex items-center justify-center gap-2"
+               >
+                 <span>View all activity</span>
+                 <i className="fas fa-chevron-down"></i>
+               </button>
+             )}
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Stats Footer */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 mt-4">
         <div className="bg-card border rounded-lg p-3 text-center shadow-sm">
            <p className="text-[10px] text-muted-foreground uppercase font-bold">Mobile Users</p>
            <p className="text-base font-bold">~85%</p>
