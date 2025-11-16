@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { fetchBusinesses, saveBusiness, deleteBusiness, fetchCategories } from '../supabaseClient';
 import { Business, Category } from '../types';
@@ -205,6 +204,39 @@ const Businesses: React.FC = () => {
     }
   };
 
+  const handleExport = () => {
+    if (businesses.length === 0) return;
+    
+    const headers = ['ID', 'Shop Name', 'Owner', 'Category', 'Contact', 'Address', 'Services', 'Home Delivery', 'Payment Options'];
+    const csvContent = [
+      headers.join(','),
+      ...businesses.map(b => {
+        const categoryName = categories.find(c => c.id === b.category)?.name || b.category;
+        return [
+          `"${b.id}"`,
+          `"${b.shopName}"`,
+          `"${b.ownerName}"`,
+          `"${categoryName}"`,
+          `"${b.contactNumber}"`,
+          `"${b.address || ''}"`,
+          `"${b.services?.join(';') || ''}"`,
+          b.homeDelivery ? 'Yes' : 'No',
+          `"${b.paymentOptions?.join(';') || ''}"`
+        ].join(',');
+      })
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `jawala_businesses_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filtered = businesses.filter(b => {
     const matchesSearch = b.shopName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           b.ownerName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -213,7 +245,7 @@ const Businesses: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6 animate-fadeInUp max-w-7xl mx-auto">
+    <div className="space-y-6 animate-fadeInUp">
       {/* Header with Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-muted/20 p-4 rounded-lg border border-muted">
         <div className="flex flex-col">
@@ -254,9 +286,14 @@ const Businesses: React.FC = () => {
             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </Select>
         </div>
-        <Button onClick={() => { setEditingBusiness(null); setModalOpen(true); }} className="gap-2">
-          <i className="fas fa-plus"></i> Add New
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport} disabled={businesses.length === 0}>
+             <i className="fas fa-download mr-2"></i> Export CSV
+          </Button>
+          <Button onClick={() => { setEditingBusiness(null); setModalOpen(true); }} className="gap-2">
+            <i className="fas fa-plus"></i> Add New
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border bg-card shadow-sm overflow-hidden">
