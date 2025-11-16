@@ -138,7 +138,6 @@ export const getRecentVisits = async (limit = 20): Promise<VisitLog[]> => {
   return data;
 };
 
-// New function for full analytics
 export const getAllVisitLogs = async (limit = 500): Promise<VisitLog[]> => {
   const { data, error } = await supabase
     .from('visit_logs')
@@ -149,23 +148,46 @@ export const getAllVisitLogs = async (limit = 500): Promise<VisitLog[]> => {
   return data;
 };
 
-// Get Category Distribution Stats
-export const getCategoryStats = async (): Promise<{name: string, value: number}[]> => {
-  const { data, error } = await supabase.from('businesses').select('category');
-  
-  if (error) return [];
-  
-  // Need to fetch category names to map IDs
+// Get Business Ecosystem Stats
+export const getEcosystemStats = async () => {
+  const { data, error } = await supabase.from('businesses').select('category, payment_options, home_delivery');
+  if (error || !data) return { category: [], payment: [], delivery: [] };
+
+  // 1. Category Distribution
   const { data: categories } = await supabase.from('categories').select('id, name');
   const catMap = new Map(categories?.map(c => [c.id, c.name]));
+  const catCounts: Record<string, number> = {};
+  
+  // 2. Payment Options
+  const payCounts: Record<string, number> = { UPI: 0, Cash: 0, Card: 0 };
+  
+  // 3. Home Delivery
+  const deliveryCounts = { yes: 0, no: 0 };
 
-  const counts: Record<string, number> = {};
   data.forEach(b => {
+    // Category
     const name = catMap.get(b.category) || 'Other';
-    counts[name] = (counts[name] || 0) + 1;
+    catCounts[name] = (catCounts[name] || 0) + 1;
+
+    // Payment
+    if (b.payment_options) {
+      b.payment_options.forEach((p: string) => {
+        if (payCounts[p] !== undefined) payCounts[p]++;
+        else payCounts[p] = 1;
+      });
+    }
+
+    // Delivery
+    if (b.home_delivery) deliveryCounts.yes++;
+    else deliveryCounts.no++;
   });
 
-  return Object.entries(counts)
-    .map(([name, value]) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  return {
+    category: Object.entries(catCounts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value),
+    payment: Object.entries(payCounts).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value),
+    delivery: [
+      { name: 'Available', value: deliveryCounts.yes }, 
+      { name: 'Not Available', value: deliveryCounts.no }
+    ]
+  };
 };
