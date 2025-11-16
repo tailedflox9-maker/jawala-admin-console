@@ -1,8 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Businesses from './pages/Businesses';
+import Analytics from './pages/Analytics';
 import { getCurrentUser, supabase } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
 
@@ -48,7 +50,7 @@ const App: React.FC = () => {
     switch (view) {
       case 'dashboard': return <Dashboard />;
       case 'businesses': return <Businesses />;
-      case 'analytics': return <Dashboard />; // Reusing dashboard for now, could expand
+      case 'analytics': return <Analytics />; 
       default: return <Dashboard />;
     }
   };
