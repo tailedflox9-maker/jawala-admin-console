@@ -97,8 +97,8 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4 pb-8 pt-6 px-1">
-      <div className="flex items-center justify-between pb-2 border-b mb-8">
+    <div className="space-y-4 pb-8 pt-2 px-2">
+      <div className="flex items-center justify-between pb-2 border-b mb-5">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Command Center</h2>
           <p className="text-sm text-muted-foreground">Real-time operational overview</p>
@@ -116,7 +116,7 @@ const Dashboard: React.FC = () => {
       </div>
       
       {/* KPI Row */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4 pt-1">
         <KpiCard 
           title="Total Visits" 
           value={summary?.total_visits || 0} 
@@ -259,6 +259,15 @@ const Dashboard: React.FC = () => {
                >
                  <span>View all activity</span>
                  <i className="fas fa-chevron-down"></i>
+               </button>
+             )}
+             {showAllActivity && (
+               <button 
+                 onClick={() => setShowAllActivity(false)}
+                 className="w-full py-3 text-xs font-medium text-primary hover:bg-muted/50 transition-colors border-t flex items-center justify-center gap-2"
+               >
+                 <span>Show less</span>
+                 <i className="fas fa-chevron-up"></i>
                </button>
              )}
           </CardContent>
