@@ -1,25 +1,16 @@
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Business, Category, AnalyticsSummary, VisitLog } from './types';
 
-// ============================================================================
-// 👇 STEP 1: PASTE YOUR SUPABASE URL INSIDE THE QUOTES BELOW
-// Example: const supabaseUrl = 'https://xyz.supabase.co';
-// ============================================================================
-const supabaseUrl = 'PASTE_YOUR_SUPABASE_URL_HERE';
+// Use environment variables
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// ============================================================================
-// 👇 STEP 2: PASTE YOUR SUPABASE ANON KEY INSIDE THE QUOTES BELOW
-// Example: const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsIn...';
-// ============================================================================
-const supabaseAnonKey = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
-
-// Validation check to help you debug
-if (supabaseUrl.includes('PASTE_YOUR') || supabaseAnonKey.includes('PASTE_YOUR')) {
-  console.error('❌ CRITICAL: You need to paste your Supabase Keys in supabaseClient.ts for the app to work!');
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ CRITICAL: Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables.');
 }
 
 // Create the client
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase: SupabaseClient = createClient(supabaseUrl || '', supabaseAnonKey || '');
 
 // --- Types from DB ---
 interface DbBusiness {
