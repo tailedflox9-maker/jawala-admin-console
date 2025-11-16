@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { getAllVisitLogs, getEcosystemStats } from '../supabaseClient';
 import { VisitLog } from '../types';
