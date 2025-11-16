@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { fetchBusinesses, saveBusiness, deleteBusiness, fetchCategories } from '../supabaseClient';
 import { Business, Category } from '../types';
@@ -173,6 +174,7 @@ const Businesses: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBusiness, setEditingBusiness] = useState<Business | null>(null);
 
@@ -203,33 +205,58 @@ const Businesses: React.FC = () => {
     }
   };
 
-  const filtered = businesses.filter(b => 
-    b.shopName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.ownerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = businesses.filter(b => {
+    const matchesSearch = b.shopName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          b.ownerName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || b.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="space-y-6 animate-fadeInUp max-w-7xl mx-auto">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Business Registry</h2>
-          <p className="text-muted-foreground">Manage the directory listings.</p>
+      {/* Header with Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-muted/20 p-4 rounded-lg border border-muted">
+        <div className="flex flex-col">
+          <span className="text-xs text-muted-foreground font-bold uppercase">Total Businesses</span>
+          <span className="text-2xl font-bold text-primary">{businesses.length}</span>
         </div>
-        <Button onClick={() => { setEditingBusiness(null); setModalOpen(true); }} className="gap-2">
-          <i className="fas fa-plus"></i> Add Business
-        </Button>
+        <div className="flex flex-col">
+          <span className="text-xs text-muted-foreground font-bold uppercase">With Delivery</span>
+          <span className="text-2xl font-bold text-green-600">
+            {businesses.filter(b => b.homeDelivery).length}
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-xs text-muted-foreground font-bold uppercase">UPI Enabled</span>
+          <span className="text-2xl font-bold text-blue-600">
+             {businesses.filter(b => b.paymentOptions?.includes('UPI')).length}
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center py-4">
-        <div className="relative w-full max-w-sm">
-          <i className="fas fa-search absolute left-3 top-3 text-muted-foreground text-xs"></i>
-          <Input
-            placeholder="Search shop or owner name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex gap-2 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
+            <i className="fas fa-search absolute left-3 top-3 text-muted-foreground text-xs"></i>
+            <Input
+              placeholder="Search shop or owner..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select 
+            value={categoryFilter} 
+            onChange={e => setCategoryFilter(e.target.value)} 
+            className="w-40"
+          >
+            <option value="all">All Categories</option>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </Select>
         </div>
+        <Button onClick={() => { setEditingBusiness(null); setModalOpen(true); }} className="gap-2">
+          <i className="fas fa-plus"></i> Add New
+        </Button>
       </div>
 
       <div className="rounded-md border bg-card shadow-sm overflow-hidden">
@@ -256,12 +283,12 @@ const Businesses: React.FC = () => {
             ) : filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center h-32 text-muted-foreground">
-                  No businesses found matching your search.
+                  No businesses found matching your criteria.
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((business) => (
-                <TableRow key={business.id}>
+                <TableRow key={business.id} className="group hover:bg-muted/30">
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="font-semibold text-base">{business.shopName}</span>
@@ -277,37 +304,38 @@ const Businesses: React.FC = () => {
                     <div className="flex gap-2">
                       {business.homeDelivery && (
                         <Badge variant="success" className="gap-1">
-                           <i className="fas fa-motorcycle text-[10px]"></i> Delivers
+                           <i className="fas fa-motorcycle text-[10px]"></i>
                         </Badge>
                       )}
                       {business.paymentOptions?.includes('UPI') && (
-                        <Badge variant="outline" className="gap-1 text-[10px] px-1.5 py-0">
-                           <i className="fas fa-qrcode"></i> UPI
+                        <Badge variant="outline" className="gap-1 text-[10px] px-1.5 py-0 bg-white">
+                           UPI
                         </Badge>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="font-mono text-xs">{business.contactNumber}</span>
+                    <span className="font-mono text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                      {business.contactNumber}
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm" 
+                        className="h-8 px-2 text-xs"
                         onClick={() => { setEditingBusiness(business); setModalOpen(true); }}
-                        title="Edit"
                       >
-                        <i className="fas fa-pencil-alt text-muted-foreground hover:text-primary"></i>
+                        <i className="fas fa-pencil-alt mr-1"></i> Edit
                       </Button>
                       <Button 
-                        variant="ghost" 
+                        variant="destructive" 
                         size="sm" 
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        className="h-8 px-2 text-xs bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
                         onClick={() => handleDelete(business.id)}
-                        title="Delete"
                       >
-                        <i className="fas fa-trash-alt"></i>
+                        <i className="fas fa-trash-alt mr-1"></i> Delete
                       </Button>
                     </div>
                   </TableCell>
