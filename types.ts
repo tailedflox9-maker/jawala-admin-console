@@ -22,7 +22,7 @@ export interface Business {
 export interface AnalyticsSummary {
   total_unique_users: number;
   total_visits: number;
-  business_count: number; // Added to match DB view
+  business_count: number;
   last_updated: string;
 }
 
@@ -32,4 +32,20 @@ export interface VisitLog {
   user_name?: string;
   visited_at?: string;
   page_path?: string;
+}
+
+export interface UserTracking {
+  id: string;
+  user_name: string;
+  device_id: string;
+  total_visits: number;
+  first_visit_at: string;
+  last_visit_at: string;
+}
+
+export interface BusinessInteraction {
+  id: string;
+  business_id: string;
+  event_type: 'view' | 'call' | 'whatsapp' | 'share';
+  created_at: string;
 }
