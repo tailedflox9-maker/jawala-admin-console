@@ -97,8 +97,8 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4 pb-8 pt-2 px-1">
-      <div className="flex items-center justify-between pb-2 border-b mb-4">
+    <div className="space-y-4 pb-8 pt-6 px-1">
+      <div className="flex items-center justify-between pb-2 border-b mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Command Center</h2>
           <p className="text-sm text-muted-foreground">Real-time operational overview</p>
