@@ -72,23 +72,25 @@ const Dashboard: React.FC = () => {
   };
 
   const KpiCard = ({ title, value, icon, trend, subtext, colorClass, bgClass, borderColor }: any) => (
-    <div className={`relative overflow-hidden border-l-4 ${borderColor} bg-white rounded-lg p-8 shadow-sm hover:shadow-md transition-all duration-200`}>
-      <div className="flex justify-between items-center gap-6">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-6">{title}</p>
-          <div className="flex items-center gap-4 mb-5">
-             <h3 className="text-6xl font-extrabold tracking-tight leading-none">{loading ? <Skeleton className="h-16 w-32 inline-block" /> : value}</h3>
-             {trend !== undefined && !loading && (
-               <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-3 py-1.5 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
-                 {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
-               </span>
-             )}
+    <div className={`relative overflow-hidden border-l-4 ${borderColor} bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-200`}>
+      <div className="flex flex-col">
+        <div className="flex justify-between items-start mb-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{title}</p>
+          <div className={`p-2.5 rounded-lg ${bgClass} ${colorClass} shadow-sm`}>
+            <i className={`fas ${icon} text-lg`}></i>
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed">{loading ? <Skeleton className="h-4 w-36" /> : subtext}</p>
         </div>
-        <div className={`p-4 rounded-xl ${bgClass} ${colorClass} shadow-sm flex-shrink-0`}>
-          <i className={`fas ${icon} text-2xl`}></i>
+        
+        <div className="flex items-baseline gap-3 mb-3">
+          <h3 className="text-4xl font-extrabold tracking-tight leading-none">{loading ? <Skeleton className="h-12 w-24 inline-block" /> : value}</h3>
+          {trend !== undefined && !loading && (
+            <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-2.5 py-1 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
+              {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
+            </span>
+          )}
         </div>
+        
+        <p className="text-sm text-muted-foreground">{loading ? <Skeleton className="h-4 w-32" /> : subtext}</p>
       </div>
     </div>
   );
@@ -241,9 +243,9 @@ const Dashboard: React.FC = () => {
                            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                            backgroundColor: 'white'
                          }}
-                         cursor={{fill: 'rgba(59, 130, 246, 0.1)'}}
+                         cursor={{fill: 'rgba(100, 116, 139, 0.1)'}}
                       />
-                      <Bar dataKey="visits" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                      <Bar dataKey="visits" fill="#64748b" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
