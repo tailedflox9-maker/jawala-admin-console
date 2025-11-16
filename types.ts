@@ -1,3 +1,4 @@
+
 export interface Category {
   id: string;
   name: string;
@@ -21,6 +22,7 @@ export interface Business {
 export interface AnalyticsSummary {
   total_unique_users: number;
   total_visits: number;
+  business_count: number; // Added to match DB view
   last_updated: string;
 }
 
