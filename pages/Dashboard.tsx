@@ -1,27 +1,35 @@
+
 import React, { useEffect, useState } from 'react';
-import { getAnalyticsSummary, getRecentVisits, fetchBusinesses } from '../supabaseClient';
-import { AnalyticsSummary, VisitLog, Business } from '../types';
+import { getAnalyticsSummary, getRecentVisits, getLiveUsersCount, getRealTrafficData, fetchBusinesses } from '../supabaseClient';
+import { AnalyticsSummary, VisitLog } from '../types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Primitives';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Dashboard: React.FC = () => {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [recentVisits, setRecentVisits] = useState<VisitLog[]>([]);
-  const [deliveryCount, setDeliveryCount] = useState(0);
+  const [liveUsers, setLiveUsers] = useState(0);
+  const [chartData, setChartData] = useState<{name: string, visits: number}[]>([]);
+  const [businessCount, setBusinessCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const [sum, visits, businesses] = await Promise.all([
+        const [sum, visits, live, traffic, businesses] = await Promise.all([
           getAnalyticsSummary(),
           getRecentVisits(10),
+          getLiveUsersCount(),
+          getRealTrafficData(),
           fetchBusinesses()
         ]);
+        
         setSummary(sum);
         setRecentVisits(visits);
-        setDeliveryCount(businesses.filter(b => b.homeDelivery).length);
+        setLiveUsers(live);
+        setChartData(traffic);
+        setBusinessCount(businesses.length);
       } catch (e) {
         console.error(e);
       } finally {
@@ -29,24 +37,21 @@ const Dashboard: React.FC = () => {
       }
     };
     loadData();
+    
+    // Refresh live users every 30s
+    const interval = setInterval(async () => {
+       const live = await getLiveUsersCount();
+       setLiveUsers(live);
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
-  // Mock trend data - ideally calculate from logs if timestamp available
-  const data = [
-    { name: 'Mon', visits: 40 },
-    { name: 'Tue', visits: 55 },
-    { name: 'Wed', visits: 45 },
-    { name: 'Thu', visits: 70 },
-    { name: 'Fri', visits: 95 },
-    { name: 'Sat', visits: 120 },
-    { name: 'Sun', visits: 105 },
-  ];
-
-  const StatCard = ({ title, value, icon, subtext, colorClass }: any) => (
+  const StatCard = ({ title, value, icon, subtext, colorClass, animate }: any) => (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <i className={`fas ${icon} ${colorClass} text-lg`}></i>
+        <i className={`fas ${icon} ${colorClass} text-lg ${animate ? 'animate-pulse' : ''}`}></i>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
@@ -55,7 +60,7 @@ const Dashboard: React.FC = () => {
     </Card>
   );
 
-  if (loading) return <div className="p-8">Loading dashboard...</div>;
+  if (loading) return <div className="p-8 flex items-center justify-center h-full text-muted-foreground">Loading real-time data...</div>;
 
   return (
     <div className="space-y-8 animate-fadeInUp max-w-7xl mx-auto">
@@ -68,17 +73,18 @@ const Dashboard: React.FC = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard 
           title="Total Businesses" 
-          value={summary?.business_count || 0} 
+          value={businessCount} 
           icon="fa-store" 
           colorClass="text-blue-500"
           subtext="Active directory listings" 
         />
         <StatCard 
-          title="Total Users" 
-          value={summary?.total_unique_users || 0} 
-          icon="fa-users" 
-          colorClass="text-purple-500"
-          subtext="Lifetime unique visitors" 
+          title="Live Users Now" 
+          value={liveUsers} 
+          icon="fa-circle" 
+          colorClass="text-red-500"
+          animate={true}
+          subtext="Active on site right now" 
         />
         <StatCard 
           title="Total Visits" 
@@ -88,11 +94,11 @@ const Dashboard: React.FC = () => {
           subtext="Total page interactions" 
         />
         <StatCard 
-          title="Delivery Enabled" 
-          value={deliveryCount} 
-          icon="fa-truck-fast" 
-          colorClass="text-orange-500"
-          subtext={`${summary?.business_count ? Math.round((deliveryCount / summary.business_count) * 100) : 0}% of all businesses`} 
+          title="Total Users" 
+          value={summary?.total_unique_users || 0} 
+          icon="fa-users" 
+          colorClass="text-purple-500"
+          subtext="Lifetime unique visitors" 
         />
       </div>
 
@@ -101,12 +107,12 @@ const Dashboard: React.FC = () => {
         <Card className="md:col-span-4 lg:col-span-5">
           <CardHeader>
             <CardTitle>Traffic Trends</CardTitle>
-            <CardDescription>Visit volume over the last 7 days</CardDescription>
+            <CardDescription>Real-time visit volume over the last 7 days</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <div className="h-[350px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
+                <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -151,6 +157,11 @@ const Dashboard: React.FC = () => {
                     </div>
                  </div>
                ))}
+               {recentVisits.length === 0 && (
+                 <div className="text-center text-muted-foreground text-sm py-8">
+                   No activity yet
+                 </div>
+               )}
              </div>
           </CardContent>
         </Card>
