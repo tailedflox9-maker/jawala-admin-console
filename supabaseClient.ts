@@ -1,12 +1,23 @@
+
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Business, Category, AnalyticsSummary, VisitLog } from './types';
 
-// Use environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// --- SAFE ENVIRONMENT ACCESS ---
+// This prevents the "Cannot read properties of undefined" error
+const getEnv = (key: string) => {
+  try {
+    // @ts-ignore
+    return import.meta.env?.[key] || '';
+  } catch (e) {
+    return '';
+  }
+};
+
+const supabaseUrl = getEnv('VITE_SUPABASE_URL');
+const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ CRITICAL: Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables.');
+  console.error('❌ CRITICAL: Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Please check your .env file.');
 }
 
 // Create the client
@@ -131,6 +142,23 @@ export const getAnalyticsSummary = async (): Promise<AnalyticsSummary | null> =>
   return data;
 };
 
+// Get LIVE USERS (Active in last 60 seconds)
+export const getLiveUsersCount = async (): Promise<number> => {
+  try {
+    const threshold = new Date(Date.now() - 60000).toISOString(); // Last 60s
+    const { count, error } = await supabase
+      .from('live_users')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true)
+      .gte('last_ping', threshold);
+    
+    if (error) throw error;
+    return count || 0;
+  } catch (error) {
+    return 0;
+  }
+};
+
 export const getRecentVisits = async (limit = 20): Promise<VisitLog[]> => {
   const { data, error } = await supabase.from('visit_logs').select('*').order('visited_at', { ascending: false }).limit(limit);
   if (error) return [];
@@ -145,6 +173,44 @@ export const getAllVisitLogs = async (limit = 500): Promise<VisitLog[]> => {
     .limit(limit);
   if (error) return [];
   return data;
+};
+
+// Calculate REAL chart data from logs
+export const getRealTrafficData = async () => {
+  // Get logs for last 7 days
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // 7 days including today
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from('visit_logs')
+    .select('visited_at')
+    .gte('visited_at', sevenDaysAgo.toISOString());
+
+  if (error || !data) return [];
+
+  // Group by date
+  const daysMap = new Map<string, number>();
+  
+  // Initialize map with 0 for all 7 days
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }); // Mon, Tue
+    daysMap.set(dayName, 0);
+  }
+
+  // Fill data
+  data.forEach(log => {
+    const d = new Date(log.visited_at);
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+    if (daysMap.has(dayName)) {
+      daysMap.set(dayName, (daysMap.get(dayName) || 0) + 1);
+    }
+  });
+
+  // Convert to array
+  return Array.from(daysMap).map(([name, visits]) => ({ name, visits }));
 };
 
 // Get Business Ecosystem Stats
