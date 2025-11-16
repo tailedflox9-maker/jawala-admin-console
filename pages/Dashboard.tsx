@@ -72,22 +72,22 @@ const Dashboard: React.FC = () => {
   };
 
   const KpiCard = ({ title, value, icon, trend, subtext, colorClass, bgClass, borderColor }: any) => (
-    <Card className={`relative overflow-hidden border-l-4 ${borderColor} hover:shadow-lg transition-all duration-200 hover:scale-[1.02]`}>
+    <Card className={`relative overflow-hidden border-l-4 ${borderColor} hover:shadow-lg transition-all duration-200`}>
       <CardContent className="p-6">
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">{title}</p>
-            <div className="flex items-center gap-3 mb-2">
-               <h3 className="text-3xl sm:text-4xl font-extrabold tracking-tight">{loading ? <Skeleton className="h-10 w-20 inline-block" /> : value}</h3>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">{title}</p>
+            <div className="flex items-center gap-3 mb-3">
+               <h3 className="text-4xl font-extrabold tracking-tight">{loading ? <Skeleton className="h-12 w-24 inline-block" /> : value}</h3>
                {trend !== undefined && !loading && (
-                 <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-2 py-1 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
+                 <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-2.5 py-1 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
                    {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
                  </span>
                )}
             </div>
-            <p className="text-xs text-muted-foreground truncate">{loading ? <Skeleton className="h-3 w-28" /> : subtext}</p>
+            <p className="text-sm text-muted-foreground">{loading ? <Skeleton className="h-4 w-32" /> : subtext}</p>
           </div>
-          <div className={`p-3 rounded-xl ${bgClass} ${colorClass} shadow-sm`}>
+          <div className={`p-3 rounded-xl ${bgClass} ${colorClass} shadow-sm flex-shrink-0`}>
             <i className={`fas ${icon} text-xl`}></i>
           </div>
         </div>
@@ -96,14 +96,14 @@ const Dashboard: React.FC = () => {
   );
 
   return (
-    <div className="space-y-4 pb-8 pt-2 px-2">
-      <div className="flex items-center justify-between pb-4 border-b-2 border-gradient mb-6 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 -mx-2 px-6 py-4 rounded-lg">
+    <div className="space-y-6 pb-8 pt-2 px-2">
+      <div className="flex items-center justify-between pb-4 border-b mb-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Command Center</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Command Center</h2>
           <p className="text-sm text-muted-foreground mt-1">Real-time operational overview</p>
         </div>
         <div className="flex items-center gap-2">
-           <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg shadow-green-200">
+           <div className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md">
              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
@@ -120,9 +120,9 @@ const Dashboard: React.FC = () => {
           title="Total Visits" 
           value={summary?.total_visits || 0} 
           icon="fa-chart-simple" 
-          colorClass="text-blue-600"
-          bgClass="bg-gradient-to-br from-blue-50 to-blue-100"
-          borderColor="border-l-blue-500"
+          colorClass="text-slate-700"
+          bgClass="bg-slate-50"
+          borderColor="border-l-slate-400"
           trend={trends.visits}
           subtext="Page interactions"
         />
@@ -130,9 +130,9 @@ const Dashboard: React.FC = () => {
           title="Active Users" 
           value={liveUsers} 
           icon="fa-users" 
-          colorClass="text-green-600"
-          bgClass="bg-gradient-to-br from-green-50 to-green-100"
-          borderColor="border-l-green-500"
+          colorClass="text-slate-700"
+          bgClass="bg-slate-50"
+          borderColor="border-l-slate-400"
           trend={liveUsers > 0 ? 100 : 0}
           subtext="Currently online"
         />
@@ -140,9 +140,9 @@ const Dashboard: React.FC = () => {
           title="Businesses" 
           value={businesses.length} 
           icon="fa-store" 
-          colorClass="text-purple-600"
-          bgClass="bg-gradient-to-br from-purple-50 to-purple-100"
-          borderColor="border-l-purple-500"
+          colorClass="text-slate-700"
+          bgClass="bg-slate-50"
+          borderColor="border-l-slate-400"
           trend={0}
           subtext="Directory listings"
         />
@@ -150,9 +150,9 @@ const Dashboard: React.FC = () => {
           title="Unique Visitors" 
           value={summary?.total_unique_users || 0} 
           icon="fa-fingerprint" 
-          colorClass="text-orange-600"
-          bgClass="bg-gradient-to-br from-orange-50 to-orange-100"
-          borderColor="border-l-orange-500"
+          colorClass="text-slate-700"
+          bgClass="bg-slate-50"
+          borderColor="border-l-slate-400"
           trend={0}
           subtext="Lifetime distinct users"
         />
@@ -162,11 +162,11 @@ const Dashboard: React.FC = () => {
         {/* Charts Column */}
         <div className="md:col-span-4 lg:col-span-5 space-y-4 flex flex-col">
           {/* Weekly Trend */}
-          <Card className="flex-1 min-h-[250px] border-l-4 border-l-blue-500 shadow-md hover:shadow-xl transition-shadow">
-            <CardHeader className="pb-2 pt-4 bg-gradient-to-r from-blue-50/50 to-transparent">
+          <Card className="flex-1 min-h-[250px] shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2 pt-4">
               <CardTitle className="text-lg flex items-center gap-2">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <i className="fas fa-chart-line text-blue-600"></i>
+                <div className="p-2 bg-slate-100 rounded-lg">
+                  <i className="fas fa-chart-line text-slate-700"></i>
                 </div>
                 Traffic Trends
               </CardTitle>
@@ -199,12 +199,12 @@ const Dashboard: React.FC = () => {
           </Card>
 
           {/* Hourly Traffic */}
-          <Card className="min-h-[200px] border-l-4 border-l-purple-500 shadow-md hover:shadow-xl transition-shadow">
-            <CardHeader className="pb-2 pt-4 bg-gradient-to-r from-purple-50/50 to-transparent">
+          <Card className="min-h-[200px] shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2 pt-4">
               <div className="flex items-center justify-between">
                  <CardTitle className="text-lg flex items-center gap-2">
-                   <div className="p-2 bg-purple-100 rounded-lg">
-                     <i className="fas fa-clock text-purple-600"></i>
+                   <div className="p-2 bg-slate-100 rounded-lg">
+                     <i className="fas fa-clock text-slate-700"></i>
                    </div>
                    Today's Hourly
                  </CardTitle>
@@ -231,12 +231,12 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Live Feed Column */}
-        <Card className="md:col-span-3 lg:col-span-2 flex flex-col h-[500px] md:h-auto sticky top-0 border-l-4 border-l-green-500 shadow-md hover:shadow-xl transition-shadow">
-          <CardHeader className="pb-3 pt-4 border-b bg-gradient-to-r from-green-50/50 to-transparent flex-shrink-0">
+        <Card className="md:col-span-3 lg:col-span-2 flex flex-col h-[500px] md:h-auto sticky top-0 shadow-sm hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3 pt-4 border-b bg-muted/5 flex-shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <i className="fas fa-rss text-green-600"></i>
+                <div className="p-2 bg-slate-100 rounded-lg">
+                  <i className="fas fa-rss text-slate-700"></i>
                 </div>
                 Live Feed
               </CardTitle>
@@ -294,33 +294,33 @@ const Dashboard: React.FC = () => {
 
       {/* Quick Stats Footer */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 mt-4">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all hover:scale-105">
-           <div className="text-blue-600 mb-2">
+        <div className="bg-card border rounded-xl p-4 text-center shadow-sm hover:shadow-md transition-all">
+           <div className="text-slate-600 mb-2">
              <i className="fas fa-mobile-alt text-2xl"></i>
            </div>
-           <p className="text-xs text-blue-600 uppercase font-bold mb-1">Mobile Users</p>
-           <p className="text-xl font-bold text-blue-700">~85%</p>
+           <p className="text-xs text-muted-foreground uppercase font-bold mb-1">Mobile Users</p>
+           <p className="text-xl font-bold text-foreground">~85%</p>
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all hover:scale-105">
-           <div className="text-purple-600 mb-2">
+        <div className="bg-card border rounded-xl p-4 text-center shadow-sm hover:shadow-md transition-all">
+           <div className="text-slate-600 mb-2">
              <i className="fas fa-chart-bar text-2xl"></i>
            </div>
-           <p className="text-xs text-purple-600 uppercase font-bold mb-1">Peak Time</p>
-           <p className="text-xl font-bold text-purple-700">8 PM - 9 PM</p>
+           <p className="text-xs text-muted-foreground uppercase font-bold mb-1">Peak Time</p>
+           <p className="text-xl font-bold text-foreground">8 PM - 9 PM</p>
         </div>
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all hover:scale-105">
-           <div className="text-green-600 mb-2">
+        <div className="bg-card border rounded-xl p-4 text-center shadow-sm hover:shadow-md transition-all">
+           <div className="text-slate-600 mb-2">
              <i className="fas fa-redo text-2xl"></i>
            </div>
-           <p className="text-xs text-green-600 uppercase font-bold mb-1">Return Rate</p>
-           <p className="text-xl font-bold text-green-700">Calculating...</p>
+           <p className="text-xs text-muted-foreground uppercase font-bold mb-1">Return Rate</p>
+           <p className="text-xl font-bold text-foreground">Calculating...</p>
         </div>
-        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-xl p-4 text-center shadow-md hover:shadow-lg transition-all hover:scale-105">
-           <div className="text-orange-600 mb-2">
+        <div className="bg-card border rounded-xl p-4 text-center shadow-sm hover:shadow-md transition-all">
+           <div className="text-slate-600 mb-2">
              <i className="fas fa-clock text-2xl"></i>
            </div>
-           <p className="text-xs text-orange-600 uppercase font-bold mb-1">Avg Session</p>
-           <p className="text-xl font-bold text-orange-700">~3m 45s</p>
+           <p className="text-xs text-muted-foreground uppercase font-bold mb-1">Avg Session</p>
+           <p className="text-xl font-bold text-foreground">~3m 45s</p>
         </div>
       </div>
     </div>
