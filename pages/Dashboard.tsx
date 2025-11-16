@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { getAnalyticsSummary, getRecentVisits, fetchBusinesses } from '../supabaseClient';
 import { AnalyticsSummary, VisitLog, Business } from '../types';
