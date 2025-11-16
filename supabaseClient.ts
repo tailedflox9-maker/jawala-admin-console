@@ -1,9 +1,8 @@
 
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-import { Business, Category, AnalyticsSummary, VisitLog } from './types';
+import { Business, Category, AnalyticsSummary, VisitLog, UserTracking, BusinessInteraction } from './types';
 
 // --- SAFE ENVIRONMENT ACCESS ---
-// This prevents the "Cannot read properties of undefined" error
 const getEnv = (key: string) => {
   try {
     // @ts-ignore
@@ -159,7 +158,7 @@ export const getLiveUsersCount = async (): Promise<number> => {
   }
 };
 
-export const getRecentVisits = async (limit = 20): Promise<VisitLog[]> => {
+export const getRecentVisits = async (limit = 50): Promise<VisitLog[]> => {
   const { data, error } = await supabase.from('visit_logs').select('*').order('visited_at', { ascending: false }).limit(limit);
   if (error) return [];
   return data;
@@ -255,4 +254,76 @@ export const getEcosystemStats = async () => {
       { name: 'Not Available', value: deliveryCounts.no }
     ]
   };
+};
+
+// NEW: Get Hourly Visits for TODAY
+export const getHourlyVisitsToday = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const { data, error } = await supabase
+    .from('visit_logs')
+    .select('visited_at')
+    .gte('visited_at', today.toISOString());
+    
+  if (error || !data) return [];
+  
+  // Initialize 0-23 hours
+  const hourlyData = Array(24).fill(0);
+  
+  data.forEach(log => {
+    const hour = new Date(log.visited_at).getHours();
+    hourlyData[hour]++;
+  });
+  
+  return hourlyData.map((visits, hour) => ({
+    hour: `${hour}:00`,
+    visits
+  }));
+};
+
+// NEW: Get Top Active Users
+export const getTopUsers = async (): Promise<UserTracking[]> => {
+  const { data, error } = await supabase
+    .from('user_tracking')
+    .select('*')
+    .order('total_visits', { ascending: false })
+    .limit(10);
+    
+  if (error || !data) return [];
+  return data;
+};
+
+// NEW: Get Top Businesses from Interactions
+export const getTopBusinesses = async () => {
+  const { data, error } = await supabase
+    .from('business_interactions')
+    .select('business_id, event_type');
+    
+  if (error || !data) return [];
+  
+  const businessCounts: Record<string, { id: string, views: number, calls: number, whatsapp: number, share: number }> = {};
+  
+  data.forEach((i: any) => {
+    if (!businessCounts[i.business_id]) {
+      businessCounts[i.business_id] = { id: i.business_id, views: 0, calls: 0, whatsapp: 0, share: 0 };
+    }
+    if (i.event_type === 'view') businessCounts[i.business_id].views++;
+    if (i.event_type === 'call') businessCounts[i.business_id].calls++;
+    if (i.event_type === 'whatsapp') businessCounts[i.business_id].whatsapp++;
+    if (i.event_type === 'share') businessCounts[i.business_id].share++;
+  });
+  
+  // We need business names
+  const { data: businesses } = await supabase.from('businesses').select('id, shop_name');
+  const nameMap = new Map(businesses?.map(b => [b.id, b.shop_name]));
+  
+  return Object.values(businessCounts)
+    .map(b => ({
+      ...b,
+      name: nameMap.get(b.id) || 'Unknown Shop',
+      total: b.views + b.calls + b.whatsapp + b.share
+    }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10);
 };
