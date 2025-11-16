@@ -73,22 +73,22 @@ const Dashboard: React.FC = () => {
 
   const KpiCard = ({ title, value, icon, trend, subtext, colorClass, bgClass, borderColor }: any) => (
     <Card className={`relative overflow-hidden border-l-4 ${borderColor} hover:shadow-lg transition-all duration-200`}>
-      <CardContent className="p-6">
-        <div className="flex justify-between items-start gap-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">{title}</p>
-            <div className="flex items-center gap-3 mb-3">
-               <h3 className="text-4xl font-extrabold tracking-tight">{loading ? <Skeleton className="h-12 w-24 inline-block" /> : value}</h3>
+      <CardContent className="p-8">
+        <div className="flex justify-between items-start gap-6">
+          <div className="flex-1 min-w-0 flex flex-col justify-center">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-5">{title}</p>
+            <div className="flex items-center gap-4 mb-4">
+               <h3 className="text-5xl font-extrabold tracking-tight leading-none">{loading ? <Skeleton className="h-14 w-28 inline-block" /> : value}</h3>
                {trend !== undefined && !loading && (
-                 <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-2.5 py-1 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
+                 <span className={`text-xs font-bold ${trend >= 0 ? 'text-green-600' : 'text-red-600'} bg-white px-3 py-1.5 rounded-full shadow-sm border ${trend >= 0 ? 'border-green-200' : 'border-red-200'}`}>
                    {trend > 0 ? '↗' : trend < 0 ? '↘' : '→'} {Math.abs(trend)}%
                  </span>
                )}
             </div>
-            <p className="text-sm text-muted-foreground">{loading ? <Skeleton className="h-4 w-32" /> : subtext}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{loading ? <Skeleton className="h-4 w-36" /> : subtext}</p>
           </div>
-          <div className={`p-3 rounded-xl ${bgClass} ${colorClass} shadow-sm flex-shrink-0`}>
-            <i className={`fas ${icon} text-xl`}></i>
+          <div className={`p-4 rounded-xl ${bgClass} ${colorClass} shadow-sm flex-shrink-0`}>
+            <i className={`fas ${icon} text-2xl`}></i>
           </div>
         </div>
       </CardContent>
@@ -163,14 +163,13 @@ const Dashboard: React.FC = () => {
         <div className="md:col-span-4 lg:col-span-5 space-y-4 flex flex-col">
           {/* Weekly Trend */}
           <Card className="flex-1 min-h-[250px] shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <div className="p-2 bg-slate-100 rounded-lg">
-                  <i className="fas fa-chart-line text-slate-700"></i>
+            <CardHeader className="pb-2 pt-5 px-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-bold">Traffic Trends</CardTitle>
+                  <CardDescription className="mt-1">Visit volume over the last 7 days</CardDescription>
                 </div>
-                Traffic Trends
-              </CardTitle>
-              <CardDescription>Visit volume over the last 7 days</CardDescription>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="h-[220px] w-full">
@@ -179,18 +178,40 @@ const Dashboard: React.FC = () => {
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2}/>
-                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12}} tickMargin={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12}} tickMargin={10} />
-                      <Tooltip 
-                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                        cursor={{ stroke: '#2563eb', strokeWidth: 1, strokeDasharray: '4 4' }}
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                      <XAxis 
+                        dataKey="name" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fontSize: 12, fill: '#6b7280'}} 
+                        tickMargin={10} 
                       />
-                      <Area type="monotone" dataKey="visits" stroke="#2563eb" strokeWidth={3} fill="url(#colorVisits)" />
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fontSize: 12, fill: '#6b7280'}} 
+                        tickMargin={10} 
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          borderRadius: '8px', 
+                          border: '1px solid #e5e7eb', 
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                          backgroundColor: 'white'
+                        }}
+                        cursor={{ stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5 5' }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="visits" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2.5} 
+                        fill="url(#colorVisits)" 
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 )}
@@ -200,14 +221,12 @@ const Dashboard: React.FC = () => {
 
           {/* Hourly Traffic */}
           <Card className="min-h-[200px] shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-2 pt-4">
+            <CardHeader className="pb-2 pt-5 px-6">
               <div className="flex items-center justify-between">
-                 <CardTitle className="text-lg flex items-center gap-2">
-                   <div className="p-2 bg-slate-100 rounded-lg">
-                     <i className="fas fa-clock text-slate-700"></i>
-                   </div>
-                   Today's Hourly
-                 </CardTitle>
+                 <div>
+                   <CardTitle className="text-xl font-bold">Today's Hourly Activity</CardTitle>
+                   <CardDescription className="mt-1">Visits by hour</CardDescription>
+                 </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -215,13 +234,18 @@ const Dashboard: React.FC = () => {
                 {loading ? <Skeleton className="h-full w-full" /> : (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={hourlyData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                       <XAxis dataKey="hour" hide />
                       <Tooltip 
-                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                         cursor={{fill: 'transparent'}}
+                         contentStyle={{ 
+                           borderRadius: '8px', 
+                           border: '1px solid #e5e7eb', 
+                           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                           backgroundColor: 'white'
+                         }}
+                         cursor={{fill: 'rgba(59, 130, 246, 0.1)'}}
                       />
-                      <Bar dataKey="visits" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="visits" fill="#3b82f6" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}
@@ -232,17 +256,16 @@ const Dashboard: React.FC = () => {
 
         {/* Live Feed Column */}
         <Card className="md:col-span-3 lg:col-span-2 flex flex-col h-[500px] md:h-auto sticky top-0 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3 pt-4 border-b bg-muted/5 flex-shrink-0">
+          <CardHeader className="pb-3 pt-5 px-6 border-b bg-muted/5 flex-shrink-0">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2">
-                <div className="p-2 bg-slate-100 rounded-lg">
-                  <i className="fas fa-rss text-slate-700"></i>
-                </div>
-                Live Feed
-              </CardTitle>
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+              <div>
+                <CardTitle className="text-xl font-bold flex items-center gap-2">
+                  Live Feed
+                  <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                </CardTitle>
+                <CardDescription className="mt-1">Real-time user actions</CardDescription>
+              </div>
             </div>
-            <CardDescription>Real-time user actions</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 overflow-y-auto pr-1 custom-scrollbar p-0">
              <div className="divide-y">
