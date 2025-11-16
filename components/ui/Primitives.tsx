@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 // --- Button ---
@@ -52,7 +53,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
 // --- Select (Native wrapper for simplicity) ---
 export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
   ({ className = '', ...props }, ref) => (
-    <div className="relative">
+    <div className="relative w-full">
       <select
         className={`flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none ${className}`}
         ref={ref}
@@ -112,13 +113,14 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttr
 ));
 
 // --- Badge ---
-export const Badge = ({ children, variant = 'default', className = '' }: { children?: React.ReactNode, variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success', className?: string }) => {
+export const Badge = ({ children, variant = 'default', className = '' }: { children?: React.ReactNode, variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success' | 'warning', className?: string }) => {
   const variants = {
     default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
     secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    outline: "text-foreground",
+    outline: "text-foreground border-input",
     destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-    success: "border-transparent bg-green-100 text-green-800 hover:bg-green-200",
+    success: "border-transparent bg-emerald-100 text-emerald-800 hover:bg-emerald-200",
+    warning: "border-transparent bg-amber-100 text-amber-800 hover:bg-amber-200",
   };
   return (
     <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
@@ -155,3 +157,8 @@ export const TabsContent = ({ value, active, children }: { value: string, active
   if (!active) return null;
   return <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 animate-fadeInUp">{children}</div>;
 };
+
+// --- Skeleton ---
+export const Skeleton = ({ className = '' }: { className?: string }) => (
+  <div className={`animate-pulse rounded-md bg-muted ${className}`} />
+);
