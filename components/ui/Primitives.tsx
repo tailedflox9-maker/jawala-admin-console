@@ -49,6 +49,20 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
   }
 );
 
+// --- Select (Native wrapper for simplicity) ---
+export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
+  ({ className = '', ...props }, ref) => (
+    <div className="relative">
+      <select
+        className={`flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none ${className}`}
+        ref={ref}
+        {...props}
+      />
+      <i className="fas fa-chevron-down absolute right-3 top-3 text-xs text-muted-foreground pointer-events-none"></i>
+    </div>
+  )
+);
+
 // --- Card ---
 export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className = '', ...props }, ref) => (
   <div ref={ref} className={`rounded-lg border bg-card text-card-foreground shadow-sm ${className}`} {...props} />
@@ -60,6 +74,10 @@ export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
 
 export const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(({ className = '', ...props }, ref) => (
   <h3 ref={ref} className={`text-2xl font-semibold leading-none tracking-tight ${className}`} {...props} />
+));
+
+export const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(({ className = '', ...props }, ref) => (
+  <p ref={ref} className={`text-sm text-muted-foreground ${className}`} {...props} />
 ));
 
 export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className = '', ...props }, ref) => (
@@ -94,16 +112,46 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttr
 ));
 
 // --- Badge ---
-export const Badge = ({ children, variant = 'default', className = '' }: { children?: React.ReactNode, variant?: 'default' | 'secondary' | 'outline' | 'destructive', className?: string }) => {
+export const Badge = ({ children, variant = 'default', className = '' }: { children?: React.ReactNode, variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success', className?: string }) => {
   const variants = {
     default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
     secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
     outline: "text-foreground",
     destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+    success: "border-transparent bg-green-100 text-green-800 hover:bg-green-200",
   };
   return (
     <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}>
       {children}
     </div>
   );
+};
+
+// --- Tabs ---
+export const Tabs = ({ value, onValueChange, children }: { value: string, onValueChange: (v: string) => void, children: React.ReactNode }) => {
+  return <div className="w-full" data-value={value}>{children}</div>
+};
+
+export const TabsList = ({ children }: { children: React.ReactNode }) => (
+  <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground w-full justify-start mb-4">
+    {children}
+  </div>
+);
+
+export const TabsTrigger = ({ value, onClick, active, children }: { value: string, onClick?: () => void, active?: boolean, children: React.ReactNode }) => (
+  <button
+    onClick={onClick}
+    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+      active 
+        ? "bg-background text-foreground shadow-sm" 
+        : "hover:bg-background/50 hover:text-foreground"
+    }`}
+  >
+    {children}
+  </button>
+);
+
+export const TabsContent = ({ value, active, children }: { value: string, active: boolean, children: React.ReactNode }) => {
+  if (!active) return null;
+  return <div className="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 animate-fadeInUp">{children}</div>;
 };
