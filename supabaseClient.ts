@@ -1,4 +1,3 @@
-
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
 import { Business, Category, AnalyticsSummary, VisitLog } from './types';
 
