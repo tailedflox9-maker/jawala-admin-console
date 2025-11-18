@@ -13,7 +13,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Chip,
   Tabs,
   Tab,
@@ -22,38 +21,18 @@ import {
   LinearProgress,
   Divider,
   Alert,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
 } from '@mui/material';
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
-  LineChart,
-  Line,
-} from 'recharts';
-import {
-  Store as StoreIcon,
-  People as PeopleIcon,
-  TrendingUp as TrendingUpIcon,
-  ViewList as ViewListIcon,
-  Payment as PaymentIcon,
-  LocalShipping as DeliveryIcon,
-  Visibility as ViewIcon,
-  Phone as PhoneIcon,
-  Share as ShareIcon,
-  WhatsApp as WhatsAppIcon,
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  Store as StoreIcon, People as PeopleIcon, TrendingUp as TrendingUpIcon,
+  ViewList as ViewListIcon, Payment as PaymentIcon, LocalShipping as DeliveryIcon,
+  Visibility as ViewIcon, Phone as PhoneIcon, Share as ShareIcon, WhatsApp as WhatsAppIcon,
 } from '@mui/icons-material';
+import { 
+  Store, Users, TrendingUp, List, CreditCard, Truck, 
+  Eye, Phone, Share2, MessageCircle 
+} from 'lucide-react'; // Optional: using Lucide for consistent icons if preferred, but stick to MUI for now
 
 const Analytics: React.FC = () => {
   const [logs, setLogs] = useState<VisitLog[]>([]);
@@ -86,546 +65,252 @@ const Analytics: React.FC = () => {
     loadData();
   }, []);
 
-  const COLORS = ['#1976d2', '#2196f3', '#42a5f5', '#64b5f6', '#90caf9', '#bbdefb'];
-  const DELIVERY_COLORS = ['#4caf50', '#f44336'];
-
+  const COLORS = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#1d4ed8'];
+  
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
+  // Custom Tooltip for Dark Mode
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-popover border border-border p-3 rounded-lg shadow-xl">
+          <p className="font-bold text-popover-foreground">{label}</p>
+          <p className="text-primary">{`${payload[0].name} : ${payload[0].value}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (loading) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Skeleton variant="rectangular" height={60} sx={{ mb: 3 }} />
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Skeleton variant="rectangular" height={400} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Skeleton variant="rectangular" height={400} />
-          </Grid>
-        </Grid>
-      </Box>
-    );
+    return <div className="p-8"><Skeleton variant="rectangular" height={400} className="rounded-xl" /></div>;
   }
 
   const totalBusinesses = stats ? stats.category.reduce((sum, cat) => sum + cat.value, 0) : 0;
-  const deliveryEnabled = stats?.delivery[0]?.value || 0;
-  const upiEnabled = stats?.payment.find(p => p.name === 'UPI')?.value || 0;
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1600, mx: 'auto' }}>
+    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1600, mx: 'auto' }} className="space-y-6">
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Analytics Deep Dive
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Comprehensive data analysis across business ecosystem, users, and performance
-        </Typography>
-      </Box>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Analytics Deep Dive</h1>
+        <p className="text-muted-foreground">Comprehensive insights across ecosystem, users, and performance.</p>
+      </div>
 
       {/* Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                  <StoreIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {totalBusinesses}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Total Businesses
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
-                  <DeliveryIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {deliveryEnabled}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Home Delivery
-                  </Typography>
-                </Box>
-              </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={(deliveryEnabled / totalBusinesses) * 100} 
-                sx={{ mt: 1 }}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'info.main', mr: 2 }}>
-                  <PaymentIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {upiEnabled}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    UPI Enabled
-                  </Typography>
-                </Box>
-              </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={(upiEnabled / totalBusinesses) * 100} 
-                color="info"
-                sx={{ mt: 1 }}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>
-                  <PeopleIcon />
-                </Avatar>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {topUsers.length}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Active Users
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Grid container spacing={3}>
+        {[
+          { title: 'Total Businesses', value: totalBusinesses, icon: <StoreIcon />, color: 'bg-blue-500/10 text-blue-600' },
+          { title: 'Home Delivery', value: stats?.delivery[0]?.value || 0, icon: <DeliveryIcon />, color: 'bg-green-500/10 text-green-600' },
+          { title: 'UPI Enabled', value: stats?.payment.find(p => p.name === 'UPI')?.value || 0, icon: <PaymentIcon />, color: 'bg-purple-500/10 text-purple-600' },
+          { title: 'Active Users', value: topUsers.length, icon: <PeopleIcon />, color: 'bg-orange-500/10 text-orange-600' },
+        ].map((item, i) => (
+          <Grid item xs={12} sm={6} md={3} key={i}>
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-lg ${item.color}`}>
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-foreground">{item.value}</p>
+                  <p className="text-sm text-muted-foreground">{item.title}</p>
+                </div>
+              </div>
+            </div>
+          </Grid>
+        ))}
       </Grid>
 
-      {/* Tabs */}
-      <Card elevation={2}>
-        <Tabs value={activeTab} onChange={handleTabChange} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tab icon={<StoreIcon />} label="Business Ecosystem" iconPosition="start" />
-          <Tab icon={<PeopleIcon />} label="User Insights" iconPosition="start" />
-          <Tab icon={<TrendingUpIcon />} label="Performance" iconPosition="start" />
-          <Tab icon={<ViewListIcon />} label="System Logs" iconPosition="start" />
+      {/* Main Tabs */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+        <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            className="border-b border-border"
+            textColor="primary"
+            indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+        >
+          <Tab icon={<StoreIcon className="mb-0 mr-2" />} label="Ecosystem" className="text-foreground" />
+          <Tab icon={<PeopleIcon className="mb-0 mr-2" />} label="Users" className="text-foreground" />
+          <Tab icon={<TrendingUpIcon className="mb-0 mr-2" />} label="Performance" className="text-foreground" />
+          <Tab icon={<ViewListIcon className="mb-0 mr-2" />} label="Logs" className="text-foreground" />
         </Tabs>
 
-        {/* Tab 1: Business Ecosystem */}
-        {activeTab === 0 && (
-          <CardContent>
-            <Grid container spacing={3}>
-              {/* Category Distribution */}
+        <div className="p-6 bg-card">
+          {/* Tab 1: Business Ecosystem */}
+          {activeTab === 0 && (
+            <Grid container spacing={4}>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  Category Distribution
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Market saturation by business type
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-                
-                <Box sx={{ height: 350 }}>
+                <h3 className="text-lg font-semibold mb-4 text-foreground">Category Distribution</h3>
+                <div className="h-[300px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={stats?.category}
                         cx="50%"
                         cy="50%"
-                        innerRadius={70}
-                        outerRadius={120}
-                        paddingAngle={3}
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={5}
                         dataKey="value"
-                        label={({ name, percent }) => percent > 0.05 ? `${name} (${(percent * 100).toFixed(0)}%)` : ''}
                       >
                         {stats?.category.map((_, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="var(--card)" strokeWidth={2} />
                         ))}
                       </Pie>
-                      <RechartsTooltip 
-                        contentStyle={{ 
-                          borderRadius: 8, 
-                          border: 'none', 
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                          padding: '12px'
-                        }} 
-                      />
+                      <RechartsTooltip content={<CustomTooltip />} />
                     </PieChart>
                   </ResponsiveContainer>
-                </Box>
-
-                {/* Category Breakdown List */}
-                <Box sx={{ mt: 2 }}>
-                  {stats?.category.slice(0, 5).map((cat, idx) => (
-                    <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                      <Box 
-                        sx={{ 
-                          width: 16, 
-                          height: 16, 
-                          borderRadius: 1, 
-                          bgcolor: COLORS[idx], 
-                          mr: 1.5 
-                        }} 
-                      />
-                      <Typography variant="body2" sx={{ flex: 1 }}>
-                        {cat.name}
-                      </Typography>
-                      <Chip label={cat.value} size="small" />
-                    </Box>
-                  ))}
-                </Box>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                   {stats?.category.slice(0, 6).map((cat, idx) => (
+                     <div key={idx} className="flex items-center gap-2 text-sm">
+                       <div className="w-3 h-3 rounded-full" style={{backgroundColor: COLORS[idx % COLORS.length]}}></div>
+                       <span className="text-muted-foreground truncate flex-1">{cat.name}</span>
+                       <span className="font-bold text-foreground">{cat.value}</span>
+                     </div>
+                   ))}
+                </div>
               </Grid>
 
-              {/* Payment & Delivery */}
               <Grid item xs={12} md={6}>
-                <Box sx={{ mb: 4 }}>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Payment Methods
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Digital payment adoption
-                  </Typography>
-                  <Divider sx={{ my: 2 }} />
-                  
-                  <Box sx={{ height: 200 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={stats?.payment} layout="horizontal">
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="category" dataKey="name" />
-                        <YAxis type="number" />
-                        <RechartsTooltip 
-                          contentStyle={{ 
-                            borderRadius: 8, 
-                            border: 'none', 
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)' 
-                          }} 
-                        />
-                        <Bar dataKey="value" fill="#1976d2" radius={[8, 8, 0, 0]} />
+                <h3 className="text-lg font-semibold mb-4 text-foreground">Payment Methods</h3>
+                <div className="h-[250px] w-full">
+                   <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={stats?.payment} layout="vertical" margin={{left: 20}}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
+                        <XAxis type="number" stroke="var(--muted-foreground)" fontSize={12} />
+                        <YAxis type="category" dataKey="name" stroke="var(--foreground)" fontSize={12} width={60} />
+                        <RechartsTooltip cursor={{fill: 'var(--muted)'}} content={<CustomTooltip />} />
+                        <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={30} />
                       </BarChart>
-                    </ResponsiveContainer>
-                  </Box>
-                </Box>
-
-                <Box>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Delivery Service
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Home delivery availability
-                  </Typography>
-                  <Divider sx={{ my: 2 }} />
-                  
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Card variant="outlined" sx={{ textAlign: 'center', p: 2, bgcolor: 'success.50' }}>
-                        <Typography variant="h3" color="success.main" fontWeight="bold">
-                          {stats?.delivery[0]?.value}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Available
-                        </Typography>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card variant="outlined" sx={{ textAlign: 'center', p: 2, bgcolor: 'error.50' }}>
-                        <Typography variant="h3" color="error.main" fontWeight="bold">
-                          {stats?.delivery[1]?.value}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Not Available
-                        </Typography>
-                      </Card>
-                    </Grid>
-                  </Grid>
-                </Box>
+                   </ResponsiveContainer>
+                </div>
               </Grid>
             </Grid>
-          </CardContent>
-        )}
+          )}
 
-        {/* Tab 2: User Insights */}
-        {activeTab === 1 && (
-          <CardContent>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={8}>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  Top Active Users
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Most frequent visitors to the directory
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Rank</TableCell>
-                        <TableCell>User Name</TableCell>
-                        <TableCell align="center">Total Visits</TableCell>
-                        <TableCell>Last Seen</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {topUsers.map((user, index) => (
-                        <TableRow key={user.id} hover>
-                          <TableCell>
-                            <Chip 
-                              label={`#${index + 1}`} 
-                              size="small" 
-                              color={index < 3 ? 'primary' : 'default'}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Avatar sx={{ width: 32, height: 32, mr: 1, fontSize: '0.875rem' }}>
-                                {user.user_name.substring(0, 2).toUpperCase()}
-                              </Avatar>
-                              <Typography variant="body2" fontWeight="medium">
-                                {user.user_name}
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Chip label={user.total_visits} color="info" size="small" />
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="caption" color="text.secondary">
-                              {new Date(user.last_visit_at).toLocaleDateString('en-IN', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                              })}
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      User Retention
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      New vs Returning visitors
-                    </Typography>
-                    <Divider sx={{ my: 2 }} />
-
-                    <Box sx={{ textAlign: 'center', py: 3 }}>
-                      <Box 
-                        sx={{ 
-                          width: 160, 
-                          height: 160, 
-                          borderRadius: '50%', 
-                          border: '12px solid',
-                          borderColor: 'success.light',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          mx: 'auto',
-                          mb: 2
-                        }}
-                      >
-                        <Box>
-                          <Typography variant="h3" color="success.main" fontWeight="bold">
-                            78%
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            Returning
-                          </Typography>
-                        </Box>
-                      </Box>
-                      
-                      <Alert severity="success" sx={{ mt: 2 }}>
-                        High retention rate indicates strong local utility
-                      </Alert>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </CardContent>
-        )}
-
-        {/* Tab 3: Performance */}
-        {activeTab === 2 && (
-          <CardContent>
-            <Typography variant="h6" fontWeight="bold" gutterBottom>
-              Most Engaged Businesses
-            </Typography>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              Ranked by user interactions (views, calls, shares)
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-
-            {topBusinesses.length === 0 ? (
-              <Alert severity="info">No interaction data recorded yet. Data will appear as users engage with businesses.</Alert>
-            ) : (
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Rank</TableCell>
-                      <TableCell>Business Name</TableCell>
-                      <TableCell align="center">
-                        <ViewIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                        Views
-                      </TableCell>
-                      <TableCell align="center">
-                        <PhoneIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                        Calls
-                      </TableCell>
-                      <TableCell align="center">
-                        <WhatsAppIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                        WhatsApp
-                      </TableCell>
-                      <TableCell align="center">
-                        <ShareIcon fontSize="small" sx={{ verticalAlign: 'middle', mr: 0.5 }} />
-                        Shares
-                      </TableCell>
-                      <TableCell align="right">Total Score</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {topBusinesses.map((biz, index) => (
-                      <TableRow key={index} hover>
-                        <TableCell>
-                          <Chip 
-                            label={`#${index + 1}`} 
-                            size="small"
-                            color={index === 0 ? 'warning' : index < 3 ? 'success' : 'default'}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" fontWeight="medium">
-                            {biz.name}
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip label={biz.views} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip label={biz.calls} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip label={biz.whatsapp} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Chip label={biz.share} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell align="right">
-                          <Chip label={biz.total} color="primary" />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </CardContent>
-        )}
-
-        {/* Tab 4: System Logs */}
-        {activeTab === 3 && (
-          <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Box>
-                <Typography variant="h6" fontWeight="bold">
-                  System Activity Logs
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Real-time stream of user interactions
-                </Typography>
-              </Box>
-              <Chip label={`${logs.length} Records`} color="primary" />
-            </Box>
-            <Divider sx={{ my: 2 }} />
-
-            <TableContainer sx={{ maxHeight: 600 }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Timestamp</TableCell>
-                    <TableCell>User</TableCell>
-                    <TableCell>Page</TableCell>
-                    <TableCell>Device ID</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {logs.map((log, index) => (
-                    <TableRow key={log.id || index} hover>
-                      <TableCell>
-                        <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
-                          {new Date(log.visited_at || '').toLocaleString('en-IN', {
-                            day: '2-digit',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar sx={{ width: 24, height: 24, mr: 1, fontSize: '0.75rem' }}>
-                            {log.user_name ? log.user_name.substring(0, 1).toUpperCase() : 'G'}
-                          </Avatar>
-                          <Typography variant="body2">
-                            {log.user_name || 'Guest'}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Chip 
-                          label={log.page_path || '/'}
-                          size="small" 
-                          variant="outlined"
-                          sx={{ fontFamily: 'monospace', fontSize: '0.75rem' }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
-                            fontFamily: 'monospace', 
-                            color: 'text.secondary',
-                            maxWidth: 200,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}
-                        >
-                          {log.device_id}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
+          {/* Tab 2: Users */}
+          {activeTab === 1 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
+                  <tr>
+                    <th className="px-4 py-3 rounded-l-lg">User</th>
+                    <th className="px-4 py-3">Device ID</th>
+                    <th className="px-4 py-3">Visits</th>
+                    <th className="px-4 py-3">First Seen</th>
+                    <th className="px-4 py-3 rounded-r-lg">Last Active</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {topUsers.map((user) => (
+                    <tr key={user.id} className="border-b border-border hover:bg-muted/30 transition-colors">
+                      <td className="px-4 py-3 font-medium text-foreground">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
+                            {user.user_name.charAt(0).toUpperCase()}
+                          </div>
+                          {user.user_name}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{user.device_id.substring(0, 12)}...</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-1 rounded-full bg-secondary text-secondary-foreground font-bold text-xs">
+                          {user.total_visits}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{new Date(user.first_visit_at).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-foreground">{new Date(user.last_visit_at).toLocaleString()}</td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </CardContent>
-        )}
-      </Card>
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Tab 3: Performance (Interactions) */}
+          {activeTab === 2 && (
+            <div className="space-y-6">
+               {topBusinesses.length === 0 ? (
+                 <Alert severity="info" className="bg-blue-500/10 text-blue-600 border-blue-500/20">No interactions recorded yet.</Alert>
+               ) : (
+                 <div className="overflow-x-auto">
+                   <table className="w-full text-sm text-left">
+                     <thead className="text-xs text-muted-foreground uppercase bg-muted/50">
+                       <tr>
+                         <th className="px-4 py-3">Rank</th>
+                         <th className="px-4 py-3">Business</th>
+                         <th className="px-4 py-3 text-center"><ViewIcon fontSize="small" className="mr-1"/> Views</th>
+                         <th className="px-4 py-3 text-center"><PhoneIcon fontSize="small" className="mr-1"/> Calls</th>
+                         <th className="px-4 py-3 text-center"><WhatsAppIcon fontSize="small" className="mr-1"/> WhatsApp</th>
+                         <th className="px-4 py-3 text-center"><ShareIcon fontSize="small" className="mr-1"/> Shares</th>
+                         <th className="px-4 py-3 text-right">Total Score</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {topBusinesses.map((biz, idx) => (
+                         <tr key={idx} className="border-b border-border hover:bg-muted/30 transition-colors">
+                           <td className="px-4 py-3 font-bold text-muted-foreground">#{idx + 1}</td>
+                           <td className="px-4 py-3 font-medium text-foreground text-base">{biz.name}</td>
+                           <td className="px-4 py-3 text-center text-muted-foreground">{biz.views}</td>
+                           <td className="px-4 py-3 text-center">
+                             {biz.calls > 0 && <span className="px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 rounded-md font-bold text-xs">{biz.calls}</span>}
+                           </td>
+                           <td className="px-4 py-3 text-center">
+                             {biz.whatsapp > 0 && <span className="px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 rounded-md font-bold text-xs">{biz.whatsapp}</span>}
+                           </td>
+                           <td className="px-4 py-3 text-center">
+                              {biz.share > 0 && <span className="px-2 py-0.5 bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 rounded-md font-bold text-xs">{biz.share}</span>}
+                           </td>
+                           <td className="px-4 py-3 text-right font-bold text-primary text-lg">{biz.total}</td>
+                         </tr>
+                       ))}
+                     </tbody>
+                   </table>
+                 </div>
+               )}
+            </div>
+          )}
+
+          {/* Tab 4: Logs */}
+          {activeTab === 3 && (
+             <div className="max-h-[600px] overflow-y-auto">
+                <table className="w-full text-sm text-left">
+                   <thead className="text-xs text-muted-foreground uppercase bg-muted/50 sticky top-0 backdrop-blur-sm">
+                     <tr>
+                       <th className="px-4 py-3">Time</th>
+                       <th className="px-4 py-3">User</th>
+                       <th className="px-4 py-3">Action/Page</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-border">
+                     {logs.map((log, idx) => (
+                       <tr key={log.id || idx} className="hover:bg-muted/30">
+                         <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
+                           {new Date(log.visited_at || '').toLocaleTimeString()} <br/>
+                           {new Date(log.visited_at || '').toLocaleDateString()}
+                         </td>
+                         <td className="px-4 py-3">
+                            <div className="font-medium text-foreground">{log.user_name || 'Guest'}</div>
+                            <div className="text-xs text-muted-foreground font-mono">{log.device_id.substring(0,8)}</div>
+                         </td>
+                         <td className="px-4 py-3">
+                            <span className="px-2 py-1 border border-border rounded text-xs font-mono bg-background">
+                               {log.page_path}
+                            </span>
+                         </td>
+                       </tr>
+                     ))}
+                   </tbody>
+                </table>
+             </div>
+          )}
+        </div>
+      </div>
     </Box>
   );
 };
