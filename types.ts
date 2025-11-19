@@ -1,4 +1,3 @@
-
 export interface Category {
   id: string;
   name: string;
@@ -46,6 +45,7 @@ export interface UserTracking {
 export interface BusinessInteraction {
   id: string;
   business_id: string;
+  business_name?: string; // Added this
   event_type: 'view' | 'call' | 'whatsapp' | 'share';
   created_at: string;
 }
