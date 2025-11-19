@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getDashboardStats, getTrafficHistory, getInteractionStats } from '../supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Skeleton } from '../components/ui/Primitives';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import { Box, Typography, Avatar, LinearProgress, Chip, Grow } from '@mui/material';
+import { Box, Typography, Avatar, LinearProgress, Chip } from '@mui/material';
 import { TrendingUp, People, TouchApp, Visibility, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 
 const Overview: React.FC = () => {
@@ -31,110 +31,102 @@ const Overview: React.FC = () => {
     const isPositive = trend >= 0;
     
     return (
-      <Grow in timeout={500}>
-        <Card 
-          elevation={0}
-          sx={{ 
-            height: '100%',
-            background: `linear-gradient(135deg, ${colorClass}15 0%, ${colorClass}08 100%)`,
-            border: `1px solid ${colorClass}30`,
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': {
-              transform: 'translateY(-4px)',
-              boxShadow: `0 12px 24px ${colorClass}30`,
-              borderColor: `${colorClass}50`,
-            },
-          }}
-        >
-          <CardContent sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: 1.2,
-                    fontSize: '0.7rem',
-                  }}
-                >
-                  {title}
-                </Typography>
-                <Typography
-                  variant="h3"
-                  sx={{
-                    fontWeight: 900,
-                    color: 'text.primary',
-                    mt: 1,
-                    mb: 1.5,
-                    lineHeight: 1,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  {loading ? <Skeleton width={100} height={40} /> : value.toLocaleString()}
-                </Typography>
-              </Box>
-              
-              <Avatar
-                sx={{
-                  bgcolor: `${colorClass}20`,
-                  color: colorClass,
-                  width: 56,
-                  height: 56,
-                  boxShadow: `0 4px 12px ${colorClass}25`,
-                }}
-              >
-                <Icon sx={{ fontSize: 28 }} />
-              </Avatar>
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {isPositive ? (
-                <ArrowUpward sx={{ fontSize: 16, color: '#4CAF50' }} />
-              ) : (
-                <ArrowDownward sx={{ fontSize: 16, color: '#f44336' }} />
-              )}
+      <Card 
+        elevation={0}
+        sx={{ 
+          height: '100%',
+          background: `linear-gradient(135deg, ${colorClass}15 0%, ${colorClass}08 100%)`,
+          border: `1px solid ${colorClass}30`,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+            <Box sx={{ flex: 1 }}>
               <Typography
-                variant="body2"
+                variant="caption"
                 sx={{
-                  color: isPositive ? '#4CAF50' : '#f44336',
-                  fontWeight: 700,
-                  fontSize: '0.875rem',
-                }}
-              >
-                {Math.abs(trend)}%
-              </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
                   color: 'text.secondary',
-                  ml: 0.5,
-                  fontSize: '0.813rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1.2,
+                  fontSize: '0.7rem',
                 }}
               >
-                vs last week
+                {title}
+              </Typography>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 900,
+                  color: 'text.primary',
+                  mt: 1,
+                  mb: 1.5,
+                  lineHeight: 1,
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                {loading ? <Skeleton width={100} height={40} /> : value.toLocaleString()}
               </Typography>
             </Box>
-          </CardContent>
+            
+            <Avatar
+              sx={{
+                bgcolor: `${colorClass}20`,
+                color: colorClass,
+                width: 56,
+                height: 56,
+                boxShadow: `0 4px 12px ${colorClass}25`,
+              }}
+            >
+              <Icon sx={{ fontSize: 28 }} />
+            </Avatar>
+          </Box>
 
-          {/* Decorative blob */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: -40,
-              right: -40,
-              width: 120,
-              height: 120,
-              borderRadius: '50%',
-              background: `radial-gradient(circle, ${colorClass}15 0%, transparent 70%)`,
-              pointerEvents: 'none',
-            }}
-          />
-        </Card>
-      </Grow>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {isPositive ? (
+              <ArrowUpward sx={{ fontSize: 16, color: '#4CAF50' }} />
+            ) : (
+              <ArrowDownward sx={{ fontSize: 16, color: '#f44336' }} />
+            )}
+            <Typography
+              variant="body2"
+              sx={{
+                color: isPositive ? '#4CAF50' : '#f44336',
+                fontWeight: 700,
+                fontSize: '0.875rem',
+              }}
+            >
+              {Math.abs(trend)}%
+            </Typography>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: 'text.secondary',
+                ml: 0.5,
+                fontSize: '0.813rem',
+              }}
+            >
+              vs last week
+            </Typography>
+          </Box>
+        </CardContent>
+
+        {/* Decorative blob */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: -40,
+            right: -40,
+            width: 120,
+            height: 120,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${colorClass}15 0%, transparent 70%)`,
+            pointerEvents: 'none',
+          }}
+        />
+      </Card>
     );
   };
 
@@ -200,225 +192,211 @@ const Overview: React.FC = () => {
       {/* Charts Row */}
       <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, mb: 4 }}>
         {/* Traffic Chart - Enhanced */}
-        <Grow in timeout={700}>
-          <Card
-            elevation={0}
-            sx={{
-              border: 1,
-              borderColor: 'divider',
-              transition: 'all 0.3s',
-              '&:hover': {
-                boxShadow: 4,
-                borderColor: 'primary.main',
-              },
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" fontWeight={700} gutterBottom>
-                  Traffic Trends
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Daily visitor volume over the last 14 days
-                </Typography>
-              </Box>
+        <Card
+          elevation={0}
+          sx={{
+            border: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom>
+                Traffic Trends
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Daily visitor volume over the last 14 days
+              </Typography>
+            </Box>
 
-              <Box sx={{ height: 340 }}>
-                {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height="100%" />
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={traffic} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#2196F3" stopOpacity={0.35}/>
-                          <stop offset="95%" stopColor="#2196F3" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid 
-                        strokeDasharray="3 3" 
-                        stroke="hsl(var(--border))" 
-                        vertical={false}
-                        opacity={0.5}
-                      />
-                      <XAxis 
-                        dataKey="date" 
-                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                        axisLine={false}
-                        tickLine={false}
-                        dy={10}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          borderColor: 'hsl(var(--border))', 
-                          borderRadius: 12,
-                          boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
-                          border: '1px solid hsl(var(--border))',
-                        }}
-                        itemStyle={{ 
-                          color: 'hsl(var(--foreground))', 
-                          fontWeight: 600,
-                          fontSize: 14,
-                        }}
-                        labelStyle={{ 
-                          color: 'hsl(var(--muted-foreground))', 
-                          marginBottom: 8,
-                          fontWeight: 500,
-                        }}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="visits" 
-                        stroke="#2196F3" 
-                        strokeWidth={3} 
-                        fillOpacity={1} 
-                        fill="url(#colorVisits)" 
-                        activeDot={{ 
-                          r: 6, 
-                          strokeWidth: 3, 
-                          stroke: '#fff',
-                          fill: '#2196F3',
-                          style: { filter: 'drop-shadow(0 2px 4px rgba(33, 150, 243, 0.4))' }
-                        }}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grow>
+            <Box sx={{ height: 340 }}>
+              {loading ? (
+                <Skeleton variant="rectangular" width="100%" height="100%" />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={traffic} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#2196F3" stopOpacity={0.35}/>
+                        <stop offset="95%" stopColor="#2196F3" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid 
+                      strokeDasharray="3 3" 
+                      stroke="hsl(var(--border))" 
+                      vertical={false}
+                      opacity={0.5}
+                    />
+                    <XAxis 
+                      dataKey="date" 
+                      tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                      axisLine={false}
+                      tickLine={false}
+                      dy={10}
+                    />
+                    <YAxis 
+                      tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))', 
+                        borderColor: 'hsl(var(--border))', 
+                        borderRadius: 12,
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
+                        border: '1px solid hsl(var(--border))',
+                      }}
+                      itemStyle={{ 
+                        color: 'hsl(var(--foreground))', 
+                        fontWeight: 600,
+                        fontSize: 14,
+                      }}
+                      labelStyle={{ 
+                        color: 'hsl(var(--muted-foreground))', 
+                        marginBottom: 8,
+                        fontWeight: 500,
+                      }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="visits" 
+                      stroke="#2196F3" 
+                      strokeWidth={3} 
+                      fillOpacity={1} 
+                      fill="url(#colorVisits)" 
+                      activeDot={{ 
+                        r: 6, 
+                        strokeWidth: 3, 
+                        stroke: '#fff',
+                        fill: '#2196F3',
+                        style: { filter: 'drop-shadow(0 2px 4px rgba(33, 150, 243, 0.4))' }
+                      }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
 
         {/* Interaction Distribution - Enhanced */}
-        <Grow in timeout={800}>
-          <Card
-            elevation={0}
-            sx={{
-              border: 1,
-              borderColor: 'divider',
-              height: '100%',
-              transition: 'all 0.3s',
-              '&:hover': {
-                boxShadow: 4,
-                borderColor: 'primary.main',
-              },
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="h6" fontWeight={700} gutterBottom>
-                  User Actions
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Engagement breakdown by type
-                </Typography>
-              </Box>
+        <Card
+          elevation={0}
+          sx={{
+            border: 1,
+            borderColor: 'divider',
+            height: '100%',
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" fontWeight={700} gutterBottom>
+                User Actions
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Engagement breakdown by type
+              </Typography>
+            </Box>
 
-              <Box sx={{ height: 240, position: 'relative' }}>
-                {loading ? (
-                  <Skeleton variant="circular" width="100%" height="100%" />
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={interactions}
-                        innerRadius={70}
-                        outerRadius={95}
-                        paddingAngle={4}
-                        dataKey="value"
-                        stroke="none"
-                      >
-                        {interactions.map((entry: any, index: number) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          borderColor: 'hsl(var(--border))', 
-                          borderRadius: 12,
-                          boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
-                        }}
-                        itemStyle={{ 
-                          color: 'hsl(var(--foreground))', 
-                          fontWeight: 600,
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                )}
-                
-                {!loading && (
-                  <Box 
+            <Box sx={{ height: 240, position: 'relative' }}>
+              {loading ? (
+                <Skeleton variant="circular" width="100%" height="100%" />
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={interactions}
+                      innerRadius={70}
+                      outerRadius={95}
+                      paddingAngle={4}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {interactions.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))', 
+                        borderColor: 'hsl(var(--border))', 
+                        borderRadius: 12,
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
+                      }}
+                      itemStyle={{ 
+                        color: 'hsl(var(--foreground))', 
+                        fontWeight: 600,
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+              
+              {!loading && (
+                <Box 
+                  sx={{ 
+                    position: 'absolute', 
+                    top: '50%', 
+                    left: '50%', 
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <Typography variant="h3" fontWeight={900}>
+                    {stats?.totalInteractions || 0}
+                  </Typography>
+                  <Typography 
+                    variant="caption" 
                     sx={{ 
-                      position: 'absolute', 
-                      top: '50%', 
-                      left: '50%', 
-                      transform: 'translate(-50%, -50%)',
-                      textAlign: 'center',
-                      pointerEvents: 'none',
+                      textTransform: 'uppercase', 
+                      fontWeight: 700,
+                      letterSpacing: 1,
+                      color: 'text.secondary',
                     }}
                   >
-                    <Typography variant="h3" fontWeight={900}>
-                      {stats?.totalInteractions || 0}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
-                        textTransform: 'uppercase', 
-                        fontWeight: 700,
-                        letterSpacing: 1,
-                        color: 'text.secondary',
-                      }}
-                    >
-                      Total
-                    </Typography>
-                  </Box>
-                )}
-              </Box>
+                    Total
+                  </Typography>
+                </Box>
+              )}
+            </Box>
 
-              {/* Legend with progress bars */}
-              <Box sx={{ mt: 3 }}>
-                {!loading && interactions.map((item: any, index: number) => {
-                  const total = interactions.reduce((sum, i) => sum + i.value, 0);
-                  const percentage = ((item.value / total) * 100).toFixed(0);
-                  
-                  return (
-                    <Box key={index} sx={{ mb: 1.5 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                        <Typography variant="body2" fontWeight={600} fontSize="0.813rem">
-                          {item.name}
-                        </Typography>
-                        <Typography variant="body2" fontWeight={700} fontSize="0.813rem">
-                          {percentage}%
-                        </Typography>
-                      </Box>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={parseInt(percentage)}
-                        sx={{
-                          height: 6,
-                          borderRadius: 3,
-                          bgcolor: `${item.fill}15`,
-                          '& .MuiLinearProgress-bar': {
-                            bgcolor: item.fill,
-                            borderRadius: 3,
-                          },
-                        }}
-                      />
+            {/* Legend with progress bars */}
+            <Box sx={{ mt: 3 }}>
+              {!loading && interactions.map((item: any, index: number) => {
+                const total = interactions.reduce((sum, i) => sum + i.value, 0);
+                const percentage = ((item.value / total) * 100).toFixed(0);
+                
+                return (
+                  <Box key={index} sx={{ mb: 1.5 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                      <Typography variant="body2" fontWeight={600} fontSize="0.813rem">
+                        {item.name}
+                      </Typography>
+                      <Typography variant="body2" fontWeight={700} fontSize="0.813rem">
+                        {percentage}%
+                      </Typography>
                     </Box>
-                  );
-                })}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grow>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={parseInt(percentage)}
+                      sx={{
+                        height: 6,
+                        borderRadius: 3,
+                        bgcolor: `${item.fill}15`,
+                        '& .MuiLinearProgress-bar': {
+                          bgcolor: item.fill,
+                          borderRadius: 3,
+                        },
+                      }}
+                    />
+                  </Box>
+                );
+              })}
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
     </Box>
   );
