@@ -51,12 +51,13 @@ const Layout: React.FC<LayoutProps> = ({ user, currentView, onNavigate, children
 
   const drawerWidth = 280;
 
-  const menuItems = [
-    { id: 'overview', label: 'Overview', icon: <Dashboard /> },
-    { id: 'live', label: 'Live Monitor', icon: <Visibility /> },
-    { id: 'performance', label: 'Business Performance', icon: <TrendingUp /> },
-    { id: 'audience', label: 'User Insights', icon: <People /> },
-  ];
+const menuItems = [
+  { id: 'overview', label: 'Overview', icon: <Dashboard /> },
+  { id: 'live', label: 'Live Monitor', icon: <Visibility /> },
+  { id: 'performance', label: 'Business Performance', icon: <TrendingUp /> },
+  { id: 'audience', label: 'User Insights', icon: <People /> },
+  { id: 'ai-search', label: 'AI Search Analytics', icon: <Search /> }, // ADD THIS LINE
+];
 
   // Prevent flickering by mounting after initial render
   useEffect(() => {
