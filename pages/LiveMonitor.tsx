@@ -74,28 +74,47 @@ const LiveMonitor: React.FC = () => {
           sx={{ 
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             color: 'white',
-            p: 4,
-            mb: 4,
-            borderRadius: 4,
+            p: { xs: 3, sm: 3.5, md: 4 },
+            mb: { xs: 3, sm: 4 },
+            borderRadius: { xs: 3, sm: 4 },
             position: 'relative',
             overflow: 'hidden',
           }}
         >
           <Box sx={{ position: 'relative', zIndex: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: { xs: 1, sm: 1.5 }, 
+              mb: 1,
+              flexWrap: 'wrap'
+            }}>
               <FiberManualRecord 
                 sx={{ 
                   color: '#22c55e',
-                  fontSize: 20,
+                  fontSize: { xs: 16, sm: 20 },
                   animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                   filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.8))',
+                  flexShrink: 0
                 }} 
               />
-              <Typography variant="h3" fontWeight={900} letterSpacing="-0.02em">
+              <Typography 
+                variant="h3" 
+                fontWeight={900} 
+                letterSpacing="-0.02em"
+                sx={{ fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' } }}
+              >
                 Live Monitor
               </Typography>
             </Box>
-            <Typography variant="body1" sx={{ opacity: 0.95, fontSize: '1.05rem' }}>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                opacity: 0.95, 
+                fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1.05rem' },
+                ml: { xs: 0, sm: 3.5 }
+              }}
+            >
               Real-time stream of user activity across the platform
             </Typography>
           </Box>
@@ -103,20 +122,28 @@ const LiveMonitor: React.FC = () => {
           {/* Online Users Card */}
           <Box 
             sx={{ 
-              position: 'absolute',
-              top: { xs: 16, md: 24 },
-              right: { xs: 16, md: 32 },
+              position: { xs: 'relative', sm: 'absolute' },
+              top: { sm: 24, md: 24 },
+              right: { sm: 16, md: 32 },
+              mt: { xs: 3, sm: 0 },
               bgcolor: 'rgba(255,255,255,0.25)',
               backdropFilter: 'blur(20px)',
               borderRadius: 3,
-              p: 3,
+              p: { xs: 2.5, sm: 3 },
               textAlign: 'center',
-              minWidth: 160,
+              minWidth: { xs: '100%', sm: 160 },
               border: '1px solid rgba(255,255,255,0.3)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
             }}
           >
-            <Typography variant="h2" fontWeight={900} sx={{ mb: 0.5 }}>
+            <Typography 
+              variant="h2" 
+              fontWeight={900} 
+              sx={{ 
+                mb: 0.5,
+                fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' }
+              }}
+            >
               {onlineCount}
             </Typography>
             <Typography 
@@ -125,7 +152,7 @@ const LiveMonitor: React.FC = () => {
                 textTransform: 'uppercase', 
                 fontWeight: 800, 
                 letterSpacing: 1.5,
-                fontSize: '0.7rem',
+                fontSize: { xs: '0.65rem', sm: '0.7rem' },
               }}
             >
               Users Online
@@ -169,7 +196,7 @@ const LiveMonitor: React.FC = () => {
         </Paper>
       </Fade>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
         {/* Activity Feed */}
         <Grid item xs={12} lg={8}>
           <Grow in timeout={700}>
@@ -185,13 +212,29 @@ const LiveMonitor: React.FC = () => {
                 },
               }}
             >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  mb: { xs: 2, sm: 2.5, md: 3 },
+                  flexWrap: 'wrap',
+                  gap: 2
+                }}>
                   <Box>
-                    <Typography variant="h6" fontWeight={700} gutterBottom>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight={700} 
+                      gutterBottom
+                      sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+                    >
                       Activity Feed
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
+                    >
                       Latest 50 interactions sorted by time
                     </Typography>
                   </Box>
@@ -210,20 +253,34 @@ const LiveMonitor: React.FC = () => {
                   </Box>
                 )}
 
-                <Box sx={{ maxHeight: 650, overflowY: 'auto', pr: 1 }}>
+                <Box sx={{ 
+                  maxHeight: { xs: 500, sm: 600, md: 650 }, 
+                  overflowY: 'auto', 
+                  pr: 1 
+                }}>
                   {feed.length === 0 && !loading && (
                     <Box 
                       sx={{ 
                         textAlign: 'center', 
-                        py: 10,
+                        py: { xs: 6, sm: 8, md: 10 },
                         color: 'text.secondary',
                       }}
                     >
-                      <Visibility sx={{ fontSize: 64, opacity: 0.3, mb: 2 }} />
-                      <Typography variant="h6" fontWeight={600}>
+                      <Visibility sx={{ fontSize: { xs: 48, sm: 56, md: 64 }, opacity: 0.3, mb: 2 }} />
+                      <Typography 
+                        variant="h6" 
+                        fontWeight={600}
+                        sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+                      >
                         No recent activity detected
                       </Typography>
-                      <Typography variant="body2" sx={{ mt: 1 }}>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          mt: 1,
+                          fontSize: { xs: '0.813rem', sm: '0.875rem' }
+                        }}
+                      >
                         Waiting for user interactions...
                       </Typography>
                     </Box>
@@ -238,10 +295,10 @@ const LiveMonitor: React.FC = () => {
                         <Paper
                           elevation={0}
                           sx={{
-                            p: 2.5,
+                            p: { xs: 2, sm: 2.5 },
                             mb: 1.5,
                             display: 'flex',
-                            gap: 2,
+                            gap: { xs: 1.5, sm: 2 },
                             alignItems: 'center',
                             border: 1,
                             borderColor: 'divider',
@@ -252,22 +309,38 @@ const LiveMonitor: React.FC = () => {
                               borderColor: color,
                               transform: 'translateX(4px)',
                             },
+                            flexWrap: { xs: 'wrap', sm: 'nowrap' }
                           }}
                         >
                           <Avatar 
                             sx={{ 
                               bgcolor: `${color}20`,
                               color: color,
-                              width: 48,
-                              height: 48,
+                              width: { xs: 40, sm: 44, md: 48 },
+                              height: { xs: 40, sm: 44, md: 48 },
+                              flexShrink: 0
                             }}
                           >
                             <Icon />
                           </Avatar>
 
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                              <Typography variant="body2" fontWeight={700}>
+                          <Box sx={{ 
+                            flex: 1, 
+                            minWidth: { xs: '100%', sm: 0 },
+                            order: { xs: 3, sm: 2 }
+                          }}>
+                            <Box sx={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: 1, 
+                              mb: 0.5,
+                              flexWrap: 'wrap'
+                            }}>
+                              <Typography 
+                                variant="body2" 
+                                fontWeight={700}
+                                sx={{ fontSize: { xs: '0.875rem', sm: '0.938rem' } }}
+                              >
                                 {item.user_name || 'Guest User'}
                               </Typography>
                               <Chip
@@ -275,7 +348,7 @@ const LiveMonitor: React.FC = () => {
                                 size="small"
                                 sx={{
                                   height: 20,
-                                  fontSize: '0.7rem',
+                                  fontSize: { xs: '0.65rem', sm: '0.7rem' },
                                   fontWeight: 700,
                                   bgcolor: `${color}15`,
                                   color: color,
@@ -285,18 +358,21 @@ const LiveMonitor: React.FC = () => {
                             <Typography 
                               variant="caption" 
                               color="text.secondary"
-                              sx={{ display: 'block' }}
+                              sx={{ 
+                                display: 'block',
+                                fontSize: { xs: '0.75rem', sm: '0.813rem' }
+                              }}
                             >
                               {item.type === 'visit' ? (
                                 <>
-                                  Viewed <Box component="code" sx={{ bgcolor: 'action.hover', px: 1, py: 0.5, borderRadius: 1, fontSize: '0.75rem' }}>
+                                  Viewed <Box component="code" sx={{ bgcolor: 'action.hover', px: 1, py: 0.5, borderRadius: 1, fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
                                     {item.page_path}
                                   </Box>
                                 </>
                               ) : (
                                 <>
                                   <strong>{item.event_type}</strong> on Business{' '}
-                                  <Box component="code" sx={{ bgcolor: 'action.hover', px: 1, py: 0.5, borderRadius: 1, fontSize: '0.75rem' }}>
+                                  <Box component="code" sx={{ bgcolor: 'action.hover', px: 1, py: 0.5, borderRadius: 1, fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
                                     {item.business_name || `#${item.business_id?.substring(0, 8)}`}
                                   </Box>
                                 </>
@@ -311,8 +387,10 @@ const LiveMonitor: React.FC = () => {
                             variant="outlined"
                             sx={{ 
                               fontFamily: 'monospace', 
-                              fontSize: '0.7rem',
+                              fontSize: { xs: '0.65rem', sm: '0.7rem' },
                               fontWeight: 700,
+                              order: { xs: 2, sm: 3 },
+                              ml: { xs: 'auto', sm: 0 }
                             }}
                           />
                         </Paper>
@@ -327,7 +405,7 @@ const LiveMonitor: React.FC = () => {
 
         {/* Sidebar */}
         <Grid item xs={12} lg={4}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 2.5, md: 3 } }}>
             {/* System Status */}
             <Grow in timeout={800}>
               <Card 
@@ -337,20 +415,26 @@ const LiveMonitor: React.FC = () => {
                   border: '1px solid #3b82f6',
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <CardContent sx={{ textAlign: 'center', p: { xs: 2.5, sm: 3 } }}>
                   <Avatar 
                     sx={{ 
-                      width: 56, 
-                      height: 56, 
+                      width: { xs: 48, sm: 52, md: 56 }, 
+                      height: { xs: 48, sm: 52, md: 56 }, 
                       bgcolor: '#3b82f6', 
                       mx: 'auto', 
                       mb: 2,
                       boxShadow: '0 8px 16px rgba(59, 130, 246, 0.3)',
                     }}
                   >
-                    <TrendingUp sx={{ fontSize: 32 }} />
+                    <TrendingUp sx={{ fontSize: { xs: 26, sm: 28, md: 32 } }} />
                   </Avatar>
-                  <Typography variant="h6" fontWeight={800} color="#1e40af" gutterBottom>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight={800} 
+                    color="#1e40af" 
+                    gutterBottom
+                    sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+                  >
                     System Status
                   </Typography>
                   <Chip 
@@ -359,7 +443,14 @@ const LiveMonitor: React.FC = () => {
                     size="small"
                     sx={{ fontWeight: 700, mb: 2 }}
                   />
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary" 
+                    sx={{ 
+                      mt: 2,
+                      fontSize: { xs: '0.813rem', sm: '0.875rem' }
+                    }}
+                  >
                     Platform is running smoothly. User engagement is consistent with daily averages.
                   </Typography>
                 </CardContent>
@@ -380,10 +471,14 @@ const LiveMonitor: React.FC = () => {
                   },
                 }}
               >
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: { xs: 2, sm: 2.5, md: 3 } }}>
                     <Devices color="primary" />
-                    <Typography variant="h6" fontWeight={700}>
+                    <Typography 
+                      variant="h6" 
+                      fontWeight={700}
+                      sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+                    >
                       Recent Devices
                     </Typography>
                   </Box>
@@ -394,7 +489,7 @@ const LiveMonitor: React.FC = () => {
                         <Paper
                           elevation={0}
                           sx={{
-                            p: 2,
+                            p: { xs: 1.5, sm: 2 },
                             display: 'flex',
                             alignItems: 'center',
                             gap: 1.5,
@@ -411,9 +506,9 @@ const LiveMonitor: React.FC = () => {
                           <Avatar 
                             sx={{ 
                               bgcolor: 'primary.main',
-                              width: 32,
-                              height: 32,
-                              fontSize: '0.875rem',
+                              width: { xs: 28, sm: 30, md: 32 },
+                              height: { xs: 28, sm: 30, md: 32 },
+                              fontSize: { xs: '0.813rem', sm: '0.875rem' },
                               fontWeight: 700,
                             }}
                           >
@@ -428,6 +523,7 @@ const LiveMonitor: React.FC = () => {
                                 overflow: 'hidden', 
                                 textOverflow: 'ellipsis',
                                 fontWeight: 600,
+                                fontSize: { xs: '0.75rem', sm: '0.813rem' }
                               }}
                             >
                               {id?.substring(0, 20)}...
@@ -455,8 +551,13 @@ const LiveMonitor: React.FC = () => {
                   },
                 }}
               >
-                <CardContent sx={{ p: 3 }}>
-                  <Typography variant="h6" fontWeight={700} gutterBottom>
+                <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight={700} 
+                    gutterBottom
+                    sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+                  >
                     Last Hour
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
@@ -468,10 +569,21 @@ const LiveMonitor: React.FC = () => {
                     ].map((stat, idx) => (
                       <Box key={idx}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                          <Typography variant="body2" fontWeight={600}>
+                          <Typography 
+                            variant="body2" 
+                            fontWeight={600}
+                            sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
+                          >
                             {stat.label}
                           </Typography>
-                          <Typography variant="body2" fontWeight={800} sx={{ color: stat.color }}>
+                          <Typography 
+                            variant="body2" 
+                            fontWeight={800} 
+                            sx={{ 
+                              color: stat.color,
+                              fontSize: { xs: '0.813rem', sm: '0.875rem' }
+                            }}
+                          >
                             {stat.value}
                           </Typography>
                         </Box>
