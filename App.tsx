@@ -5,9 +5,9 @@ import Overview from './pages/Overview';
 import LiveMonitor from './pages/LiveMonitor';
 import BusinessPerformance from './pages/BusinessPerformance';
 import UserInsights from './pages/UserInsights';
-// FIX: Use './' because App.tsx and supabaseClient.ts are in the same folder
 import { getCurrentUser, supabase } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
+import { Box, CircularProgress } from '@mui/material';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -37,9 +37,17 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <Box 
+        sx={{ 
+          minHeight: '100vh', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          bgcolor: 'background.default'
+        }}
+      >
+        <CircularProgress size={40} />
+      </Box>
     );
   }
 
