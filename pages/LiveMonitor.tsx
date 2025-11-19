@@ -297,7 +297,7 @@ const LiveMonitor: React.FC = () => {
                                 <>
                                   <strong>{item.event_type}</strong> on Business{' '}
                                   <Box component="code" sx={{ bgcolor: 'action.hover', px: 1, py: 0.5, borderRadius: 1, fontSize: '0.75rem' }}>
-                                    #{item.business_id?.substring(0, 8)}
+                                    {item.business_name || `#${item.business_id?.substring(0, 8)}`}
                                   </Box>
                                 </>
                               )}
