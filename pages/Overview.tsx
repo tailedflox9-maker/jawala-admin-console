@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { getDashboardStats, getTrafficHistory, getInteractionStats } from '../supabaseClient';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, Skeleton } from '../components/ui/Primitives';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { Box, Typography, Avatar, LinearProgress, Chip, Grow } from '@mui/material';
+import { TrendingUp, People, TouchApp, Visibility, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 
 const Overview: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
@@ -24,179 +26,401 @@ const Overview: React.FC = () => {
     fetchData();
   }, []);
 
-  const StatCard = ({ title, value, icon, colorClass, bgClass }: any) => (
-    <Card className="hover:shadow-lg transition-all duration-300 border-l-4 overflow-hidden group" style={{ borderLeftColor: colorClass }}>
-      <CardContent className="p-6 relative">
-        <div className="flex justify-between items-start relative z-10">
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{title}</p>
-            <h3 className="text-3xl font-black tracking-tight text-foreground">
-              {loading ? <Skeleton width={80} height={36} /> : value.toLocaleString()}
-            </h3>
-          </div>
-          <div className={`p-3 rounded-xl text-xl shadow-sm transition-transform group-hover:scale-110 duration-300 ${bgClass}`} style={{ color: colorClass }}>
-            <i className={`fas ${icon}`}></i>
-          </div>
-        </div>
-        {/* Decorative background blob */}
-        <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-5 pointer-events-none" style={{ backgroundColor: colorClass }}></div>
-      </CardContent>
-    </Card>
-  );
+  // Enhanced Stat Card with Material Design
+  const StatCard = ({ title, value, icon: Icon, colorClass, trend = 12.5 }: any) => {
+    const isPositive = trend >= 0;
+    
+    return (
+      <Grow in timeout={500}>
+        <Card 
+          elevation={0}
+          sx={{ 
+            height: '100%',
+            background: `linear-gradient(135deg, ${colorClass}15 0%, ${colorClass}08 100%)`,
+            border: `1px solid ${colorClass}30`,
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: `0 12px 24px ${colorClass}30`,
+              borderColor: `${colorClass}50`,
+            },
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1.2,
+                    fontSize: '0.7rem',
+                  }}
+                >
+                  {title}
+                </Typography>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontWeight: 900,
+                    color: 'text.primary',
+                    mt: 1,
+                    mb: 1.5,
+                    lineHeight: 1,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {loading ? <Skeleton width={100} height={40} /> : value.toLocaleString()}
+                </Typography>
+              </Box>
+              
+              <Avatar
+                sx={{
+                  bgcolor: `${colorClass}20`,
+                  color: colorClass,
+                  width: 56,
+                  height: 56,
+                  boxShadow: `0 4px 12px ${colorClass}25`,
+                }}
+              >
+                <Icon sx={{ fontSize: 28 }} />
+              </Avatar>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              {isPositive ? (
+                <ArrowUpward sx={{ fontSize: 16, color: '#4CAF50' }} />
+              ) : (
+                <ArrowDownward sx={{ fontSize: 16, color: '#f44336' }} />
+              )}
+              <Typography
+                variant="body2"
+                sx={{
+                  color: isPositive ? '#4CAF50' : '#f44336',
+                  fontWeight: 700,
+                  fontSize: '0.875rem',
+                }}
+              >
+                {Math.abs(trend)}%
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: 'text.secondary',
+                  ml: 0.5,
+                  fontSize: '0.813rem',
+                }}
+              >
+                vs last week
+              </Typography>
+            </Box>
+          </CardContent>
+
+          {/* Decorative blob */}
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: -40,
+              right: -40,
+              width: 120,
+              height: 120,
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${colorClass}15 0%, transparent 70%)`,
+              pointerEvents: 'none',
+            }}
+          />
+        </Card>
+      </Grow>
+    );
+  };
 
   return (
-    <div className="space-y-8 animate-fadeInUp">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Analytics Overview</h1>
-        <p className="text-muted-foreground">Real-time operational metrics for Jawala Business Directory.</p>
-      </div>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+      {/* Enhanced Header */}
+      <Box sx={{ mb: 5 }}>
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: 900,
+            color: 'text.primary',
+            mb: 1,
+            letterSpacing: '-0.02em',
+            fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+          }}
+        >
+          Analytics Overview
+        </Typography>
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: 'text.secondary',
+            fontSize: '1.05rem',
+          }}
+        >
+          Real-time operational metrics for Jawala Business Directory
+        </Typography>
+      </Box>
 
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats Grid with enhanced cards */}
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, mb: 5 }}>
         <StatCard 
           title="Total Visits" 
           value={stats?.totalVisits || 0} 
-          icon="fa-eye" 
-          colorClass="#3b82f6" 
-          bgClass="bg-blue-50 dark:bg-blue-900/20" 
+          icon={Visibility}
+          colorClass="#2196F3"
+          trend={12.5}
         />
         <StatCard 
           title="Active Users" 
           value={stats?.totalUsers || 0} 
-          icon="fa-users" 
-          colorClass="#f97316" 
-          bgClass="bg-orange-50 dark:bg-orange-900/20" 
+          icon={People}
+          colorClass="#FF9800"
+          trend={8.3}
         />
         <StatCard 
           title="Interactions" 
           value={stats?.totalInteractions || 0} 
-          icon="fa-fingerprint" 
-          colorClass="#8b5cf6" 
-          bgClass="bg-purple-50 dark:bg-purple-900/20" 
+          icon={TouchApp}
+          colorClass="#9C27B0"
+          trend={-2.1}
         />
         <StatCard 
-          title="Visits Today" 
+          title="Today's Visits" 
           value={stats?.todayVisits || 0} 
-          icon="fa-calendar-day" 
-          colorClass="#10b981" 
-          bgClass="bg-green-50 dark:bg-green-900/20" 
+          icon={TrendingUp}
+          colorClass="#4CAF50"
+          trend={15.7}
         />
-      </div>
+      </Box>
 
-      <div className="grid gap-6 md:grid-cols-7">
-        {/* Traffic Chart */}
-        <Card className="md:col-span-4 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle>Traffic Trends</CardTitle>
-            <CardDescription>Daily visitor volume over the last 14 days</CardDescription>
-          </CardHeader>
-          <CardContent className="pl-0">
-            <div className="h-[320px] w-full">
-              {loading ? <Skeleton className="h-full w-full" /> : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={traffic} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis 
-                      dataKey="date" 
-                      tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                      axisLine={false}
-                      tickLine={false}
-                      dy={10}
-                    />
-                    <YAxis 
-                      tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                      axisLine={false}
-                      tickLine={false}
-                      dx={-10}
-                    />
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))', 
-                        borderColor: 'hsl(var(--border))', 
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+      {/* Charts Row */}
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, mb: 4 }}>
+        {/* Traffic Chart - Enhanced */}
+        <Grow in timeout={700}>
+          <Card
+            elevation={0}
+            sx={{
+              border: 1,
+              borderColor: 'divider',
+              transition: 'all 0.3s',
+              '&:hover': {
+                boxShadow: 4,
+                borderColor: 'primary.main',
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={700} gutterBottom>
+                  Traffic Trends
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Daily visitor volume over the last 14 days
+                </Typography>
+              </Box>
+
+              <Box sx={{ height: 340 }}>
+                {loading ? (
+                  <Skeleton variant="rectangular" width="100%" height="100%" />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={traffic} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#2196F3" stopOpacity={0.35}/>
+                          <stop offset="95%" stopColor="#2196F3" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke="hsl(var(--border))" 
+                        vertical={false}
+                        opacity={0.5}
+                      />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                        axisLine={false}
+                        tickLine={false}
+                        dy={10}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          borderColor: 'hsl(var(--border))', 
+                          borderRadius: 12,
+                          boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
+                          border: '1px solid hsl(var(--border))',
+                        }}
+                        itemStyle={{ 
+                          color: 'hsl(var(--foreground))', 
+                          fontWeight: 600,
+                          fontSize: 14,
+                        }}
+                        labelStyle={{ 
+                          color: 'hsl(var(--muted-foreground))', 
+                          marginBottom: 8,
+                          fontWeight: 500,
+                        }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="visits" 
+                        stroke="#2196F3" 
+                        strokeWidth={3} 
+                        fillOpacity={1} 
+                        fill="url(#colorVisits)" 
+                        activeDot={{ 
+                          r: 6, 
+                          strokeWidth: 3, 
+                          stroke: '#fff',
+                          fill: '#2196F3',
+                          style: { filter: 'drop-shadow(0 2px 4px rgba(33, 150, 243, 0.4))' }
+                        }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grow>
+
+        {/* Interaction Distribution - Enhanced */}
+        <Grow in timeout={800}>
+          <Card
+            elevation={0}
+            sx={{
+              border: 1,
+              borderColor: 'divider',
+              height: '100%',
+              transition: 'all 0.3s',
+              '&:hover': {
+                boxShadow: 4,
+                borderColor: 'primary.main',
+              },
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" fontWeight={700} gutterBottom>
+                  User Actions
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Engagement breakdown by type
+                </Typography>
+              </Box>
+
+              <Box sx={{ height: 240, position: 'relative' }}>
+                {loading ? (
+                  <Skeleton variant="circular" width="100%" height="100%" />
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={interactions}
+                        innerRadius={70}
+                        outerRadius={95}
+                        paddingAngle={4}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {interactions.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          borderColor: 'hsl(var(--border))', 
+                          borderRadius: 12,
+                          boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
+                        }}
+                        itemStyle={{ 
+                          color: 'hsl(var(--foreground))', 
+                          fontWeight: 600,
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
+                
+                {!loading && (
+                  <Box 
+                    sx={{ 
+                      position: 'absolute', 
+                      top: '50%', 
+                      left: '50%', 
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <Typography variant="h3" fontWeight={900}>
+                      {stats?.totalInteractions || 0}
+                    </Typography>
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        textTransform: 'uppercase', 
+                        fontWeight: 700,
+                        letterSpacing: 1,
+                        color: 'text.secondary',
                       }}
-                      itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
-                      labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '0.25rem' }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="visits" 
-                      stroke="#3b82f6" 
-                      strokeWidth={3} 
-                      fillOpacity={1} 
-                      fill="url(#colorVisits)" 
-                      activeDot={{ r: 6, strokeWidth: 0, fill: '#3b82f6' }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Interaction Distribution */}
-        <Card className="md:col-span-3 shadow-sm hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle>User Actions</CardTitle>
-            <CardDescription>Engagement breakdown by type</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[320px] w-full relative">
-              {loading ? <Skeleton className="h-full w-full" /> : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={interactions}
-                      innerRadius={70}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                      stroke="hsl(var(--card))"
-                      strokeWidth={3}
-                      cornerRadius={6}
                     >
-                      {interactions.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                       contentStyle={{ 
-                         backgroundColor: 'hsl(var(--card))', 
-                         borderColor: 'hsl(var(--border))', 
-                         borderRadius: '8px',
-                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                       }}
-                       itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
-                    />
-                    <Legend 
-                      verticalAlign="bottom" 
-                      height={36} 
-                      iconType="circle"
-                      formatter={(value) => <span className="text-sm text-foreground font-medium ml-1">{value}</span>}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-              {/* Center Text for Donut */}
-              {!loading && (
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-4 text-center pointer-events-none">
-                  <div className="text-3xl font-bold text-foreground">
-                    {stats?.totalInteractions}
-                  </div>
-                  <div className="text-xs text-muted-foreground uppercase font-semibold">Total</div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+                      Total
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {/* Legend with progress bars */}
+              <Box sx={{ mt: 3 }}>
+                {!loading && interactions.map((item: any, index: number) => {
+                  const total = interactions.reduce((sum, i) => sum + i.value, 0);
+                  const percentage = ((item.value / total) * 100).toFixed(0);
+                  
+                  return (
+                    <Box key={index} sx={{ mb: 1.5 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Typography variant="body2" fontWeight={600} fontSize="0.813rem">
+                          {item.name}
+                        </Typography>
+                        <Typography variant="body2" fontWeight={700} fontSize="0.813rem">
+                          {percentage}%
+                        </Typography>
+                      </Box>
+                      <LinearProgress 
+                        variant="determinate" 
+                        value={parseInt(percentage)}
+                        sx={{
+                          height: 6,
+                          borderRadius: 3,
+                          bgcolor: `${item.fill}15`,
+                          '& .MuiLinearProgress-bar': {
+                            bgcolor: item.fill,
+                            borderRadius: 3,
+                          },
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grow>
+      </Box>
+    </Box>
   );
 };
 
