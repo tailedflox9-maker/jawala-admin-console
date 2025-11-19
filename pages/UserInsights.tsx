@@ -42,14 +42,14 @@ const UserInsights: React.FC = () => {
     ];
 
     return (
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
         {topThree.map((user, index) => (
           <Grid item xs={12} md={4} key={user.id}>
             <Grow in timeout={500 + index * 100}>
               <Paper
                 elevation={index === 0 ? 8 : 3}
                 sx={{
-                  p: 3,
+                  p: { xs: 2.5, sm: 3 },
                   height: '100%',
                   background: index === 0 ? gradients[0] : 'background.paper',
                   border: index === 0 ? 'none' : 1,
@@ -70,7 +70,7 @@ const UserInsights: React.FC = () => {
                     position: 'absolute',
                     top: -15,
                     right: -15,
-                    fontSize: '5rem',
+                    fontSize: { xs: '4rem', sm: '4.5rem', md: '5rem' },
                     opacity: 0.15,
                     transform: 'rotate(15deg)',
                   }}
@@ -83,9 +83,9 @@ const UserInsights: React.FC = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                     <Avatar
                       sx={{
-                        width: 80,
-                        height: 80,
-                        fontSize: '2rem',
+                        width: { xs: 64, sm: 72, md: 80 },
+                        height: { xs: 64, sm: 72, md: 80 },
+                        fontSize: { xs: '1.75rem', sm: '1.875rem', md: '2rem' },
                         fontWeight: 900,
                         bgcolor: index === 0 ? 'rgba(255,255,255,0.3)' : colors[index],
                         color: index === 0 ? 'rgba(0,0,0,0.8)' : 'white',
@@ -104,6 +104,7 @@ const UserInsights: React.FC = () => {
                     sx={{ 
                       mb: 0.5,
                       color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary',
+                      fontSize: { xs: '1.1rem', sm: '1.2rem', md: '1.25rem' }
                     }}
                   >
                     {user.user_name}
@@ -120,6 +121,7 @@ const UserInsights: React.FC = () => {
                       color: index === 0 ? 'rgba(0,0,0,0.6)' : 'text.secondary',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
                     }}
                   >
                     {user.device_id}
@@ -130,7 +132,10 @@ const UserInsights: React.FC = () => {
                     <Typography 
                       variant="h3" 
                       fontWeight={900}
-                      sx={{ color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary' }}
+                      sx={{ 
+                        color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary',
+                        fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' }
+                      }}
                     >
                       {user.total_visits}
                     </Typography>
@@ -141,6 +146,7 @@ const UserInsights: React.FC = () => {
                         fontWeight: 700,
                         letterSpacing: 1,
                         color: index === 0 ? 'rgba(0,0,0,0.7)' : 'text.secondary',
+                        fontSize: { xs: '0.65rem', sm: '0.7rem' }
                       }}
                     >
                       Total Visits
@@ -158,6 +164,7 @@ const UserInsights: React.FC = () => {
                       color: index === 0 ? 'rgba(0,0,0,0.8)' : 'text.primary',
                       fontWeight: 600,
                       border: index === 0 ? '1px solid rgba(255,255,255,0.4)' : 'none',
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
                     }}
                   />
                 </Box>
@@ -172,16 +179,27 @@ const UserInsights: React.FC = () => {
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
       {/* Header */}
-      <Box sx={{ mb: 5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-          <People sx={{ fontSize: 40, color: 'primary.main' }} />
+      <Box sx={{ mb: { xs: 3, sm: 4, md: 5 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: { xs: 1.5, sm: 2 }, 
+          mb: 1,
+          flexWrap: 'wrap'
+        }}>
+          <People sx={{ 
+            fontSize: { xs: 32, sm: 36, md: 40 }, 
+            color: 'primary.main',
+            flexShrink: 0
+          }} />
           <Typography
             variant="h3"
             sx={{
               fontWeight: 900,
               color: 'text.primary',
               letterSpacing: '-0.02em',
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' },
+              wordBreak: 'break-word'
             }}
           >
             User Insights
@@ -191,8 +209,8 @@ const UserInsights: React.FC = () => {
           variant="body1" 
           sx={{ 
             color: 'text.secondary',
-            fontSize: '1.05rem',
-            ml: 7,
+            fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1.05rem' },
+            ml: { xs: 0, sm: 6, md: 7 }
           }}
         >
           Most active users in the community
@@ -212,9 +230,19 @@ const UserInsights: React.FC = () => {
       {/* All Users Grid */}
       <Grow in timeout={800}>
         <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2, 
+            mb: { xs: 2, sm: 2.5, md: 3 },
+            flexWrap: 'wrap'
+          }}>
             <EmojiEvents sx={{ color: 'primary.main' }} />
-            <Typography variant="h6" fontWeight={700}>
+            <Typography 
+              variant="h6" 
+              fontWeight={700}
+              sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+            >
               Top Contributors
             </Typography>
             <Chip 
@@ -225,9 +253,9 @@ const UserInsights: React.FC = () => {
             />
           </Box>
 
-          <Grid container spacing={2}>
+          <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
             {users.map((user, index) => (
-              <Grid item xs={12} sm={6} md={4} key={user.id}>
+              <Grid item xs={12} sm={6} lg={4} key={user.id}>
                 <Grow in timeout={600 + index * 50}>
                   <Card
                     elevation={0}
@@ -243,17 +271,20 @@ const UserInsights: React.FC = () => {
                       },
                     }}
                   >
-                    <CardContent sx={{ p: 2.5 }}>
+                    <CardContent sx={{ 
+                      p: { xs: 2, sm: 2.5 },
+                      '&:last-child': { pb: { xs: 2, sm: 2.5 } }
+                    }}>
                       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                         {/* Rank Badge */}
                         <Avatar
                           sx={{
                             bgcolor: index < 3 ? 'primary.main' : 'action.hover',
                             color: index < 3 ? 'primary.contrastText' : 'text.secondary',
-                            width: 40,
-                            height: 40,
+                            width: { xs: 36, sm: 40 },
+                            height: { xs: 36, sm: 40 },
                             fontWeight: 900,
-                            fontSize: '1rem',
+                            fontSize: { xs: '0.875rem', sm: '1rem' },
                           }}
                         >
                           #{index + 1}
@@ -262,9 +293,9 @@ const UserInsights: React.FC = () => {
                         {/* User Avatar */}
                         <Avatar
                           sx={{
-                            width: 48,
-                            height: 48,
-                            fontSize: '1.25rem',
+                            width: { xs: 44, sm: 48 },
+                            height: { xs: 44, sm: 48 },
+                            fontSize: { xs: '1.15rem', sm: '1.25rem' },
                             fontWeight: 800,
                             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                             boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
@@ -278,13 +309,21 @@ const UserInsights: React.FC = () => {
                             variant="body1" 
                             fontWeight={700}
                             noWrap
-                            sx={{ mb: 0.5 }}
+                            sx={{ 
+                              mb: 0.5,
+                              fontSize: { xs: '0.938rem', sm: '1rem' }
+                            }}
                           >
                             {user.user_name}
                           </Typography>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Visibility sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                            <Typography 
+                              variant="caption" 
+                              color="text.secondary" 
+                              fontWeight={600}
+                              sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                            >
                               {user.total_visits} visits
                             </Typography>
                           </Box>
@@ -295,7 +334,7 @@ const UserInsights: React.FC = () => {
                       <Box
                         sx={{
                           bgcolor: 'action.hover',
-                          p: 1.5,
+                          p: { xs: 1.25, sm: 1.5 },
                           borderRadius: 1.5,
                           mb: 2,
                         }}
@@ -309,7 +348,7 @@ const UserInsights: React.FC = () => {
                             fontWeight: 700,
                             textTransform: 'uppercase',
                             letterSpacing: 0.5,
-                            fontSize: '0.65rem',
+                            fontSize: { xs: '0.6rem', sm: '0.65rem' },
                           }}
                         >
                           Device ID
@@ -322,6 +361,7 @@ const UserInsights: React.FC = () => {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             fontWeight: 600,
+                            fontSize: { xs: '0.75rem', sm: '0.813rem' }
                           }}
                         >
                           {user.device_id}
@@ -334,19 +374,24 @@ const UserInsights: React.FC = () => {
                           sx={{ 
                             flex: 1,
                             bgcolor: '#2196F315',
-                            p: 1.5,
+                            p: { xs: 1.25, sm: 1.5 },
                             borderRadius: 1.5,
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="h6" fontWeight={900} color="#2196F3">
+                          <Typography 
+                            variant="h6" 
+                            fontWeight={900} 
+                            color="#2196F3"
+                            sx={{ fontSize: { xs: '1.15rem', sm: '1.25rem' } }}
+                          >
                             {user.total_visits}
                           </Typography>
                           <Typography 
                             variant="caption" 
                             sx={{ 
                               color: 'text.secondary',
-                              fontSize: '0.65rem',
+                              fontSize: { xs: '0.6rem', sm: '0.65rem' },
                               fontWeight: 700,
                             }}
                           >
@@ -358,19 +403,24 @@ const UserInsights: React.FC = () => {
                           sx={{ 
                             flex: 1,
                             bgcolor: '#22c55e15',
-                            p: 1.5,
+                            p: { xs: 1.25, sm: 1.5 },
                             borderRadius: 1.5,
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="h6" fontWeight={900} color="#22c55e">
+                          <Typography 
+                            variant="h6" 
+                            fontWeight={900} 
+                            color="#22c55e"
+                            sx={{ fontSize: { xs: '1.15rem', sm: '1.25rem' } }}
+                          >
                             {Math.floor(user.total_visits / 7)}
                           </Typography>
                           <Typography 
                             variant="caption" 
                             sx={{ 
                               color: 'text.secondary',
-                              fontSize: '0.65rem',
+                              fontSize: { xs: '0.6rem', sm: '0.65rem' },
                               fontWeight: 700,
                             }}
                           >
@@ -392,7 +442,11 @@ const UserInsights: React.FC = () => {
                         }}
                       >
                         <CalendarToday sx={{ fontSize: 14, color: 'text.secondary' }} />
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography 
+                          variant="caption" 
+                          color="text.secondary"
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                        >
                           Last seen: <strong>{new Date(user.last_visit_at).toLocaleDateString()}</strong>
                         </Typography>
                       </Box>
@@ -407,15 +461,29 @@ const UserInsights: React.FC = () => {
             <Box 
               sx={{ 
                 textAlign: 'center',
-                py: 10,
+                py: { xs: 6, sm: 8, md: 10 },
                 color: 'text.secondary',
               }}
             >
-              <People sx={{ fontSize: 64, opacity: 0.3, mb: 2 }} />
-              <Typography variant="h6" fontWeight={600}>
+              <People sx={{ 
+                fontSize: { xs: 48, sm: 56, md: 64 }, 
+                opacity: 0.3, 
+                mb: 2 
+              }} />
+              <Typography 
+                variant="h6" 
+                fontWeight={600}
+                sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+              >
                 No user data available
               </Typography>
-              <Typography variant="body2" sx={{ mt: 1 }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  mt: 1,
+                  fontSize: { xs: '0.813rem', sm: '0.875rem' }
+                }}
+              >
                 User insights will appear as people interact with the platform
               </Typography>
             </Box>
