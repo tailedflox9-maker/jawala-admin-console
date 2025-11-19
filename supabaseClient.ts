@@ -26,7 +26,6 @@ export const supabase: SupabaseClient = createClient(supabaseUrl || '', supabase
 export const getDashboardStats = async () => {
   const today = new Date().toISOString().split('T')[0];
   
-  // Parallel requests for speed
   const [visits, users, interactions, todayVisits] = await Promise.all([
     supabase.from('visit_logs').select('*', { count: 'exact', head: true }),
     supabase.from('user_tracking').select('*', { count: 'exact', head: true }),
@@ -42,7 +41,7 @@ export const getDashboardStats = async () => {
   };
 };
 
-// 2. Interaction Breakdown (Calls vs WhatsApp vs Share)
+// 2. Interaction Breakdown
 export const getInteractionStats = async () => {
   const { data } = await supabase.from('business_interactions').select('event_type');
   
@@ -61,7 +60,7 @@ export const getInteractionStats = async () => {
   ].filter(i => i.value > 0);
 };
 
-// 3. Traffic Trend (Last 14 Days)
+// 3. Traffic Trend
 export const getTrafficHistory = async () => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 14);
@@ -72,7 +71,6 @@ export const getTrafficHistory = async () => {
     .gte('visited_at', startDate.toISOString());
 
   const daysMap = new Map<string, number>();
-  // Initialize last 14 days with 0
   for (let i = 13; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
@@ -89,15 +87,33 @@ export const getTrafficHistory = async () => {
   return Array.from(daysMap).map(([date, count]) => ({ date, visits: count }));
 };
 
-// 4. Top Performing Businesses (By ID)
+// 4. Top Performing Businesses (UPDATED TO FETCH NAMES)
 export const getTopBusinessIds = async () => {
-  const { data } = await supabase.from('business_interactions').select('business_id, event_type');
+  // UPDATED: Now selecting business_name as well
+  const { data } = await supabase.from('business_interactions').select('business_id, business_name, event_type');
   
   const counts: Record<string, any> = {};
   
   data?.forEach((row: any) => {
     const id = row.business_id;
-    if (!counts[id]) counts[id] = { id, calls: 0, whatsapp: 0, shares: 0, views: 0, total: 0 };
+    
+    // Initialize or update name
+    if (!counts[id]) {
+      counts[id] = { 
+        id, 
+        name: row.business_name || 'Unknown Business', // Default if null
+        calls: 0, 
+        whatsapp: 0, 
+        shares: 0, 
+        views: 0, 
+        total: 0 
+      };
+    }
+    
+    // If we encounter a row with a valid name, update the record (in case previous rows were null)
+    if (row.business_name && counts[id].name === 'Unknown Business') {
+      counts[id].name = row.business_name;
+    }
     
     if (row.event_type === 'call') counts[id].calls++;
     else if (row.event_type === 'whatsapp') counts[id].whatsapp++;
@@ -115,19 +131,19 @@ export const getTopUsers = async () => {
   const { data } = await supabase
     .from('user_tracking')
     .select('*')
-    .order('last_visit_at', { ascending: false }) // Recently active
+    .order('last_visit_at', { ascending: false })
     .limit(50);
   return data || [];
 };
 
-// 6. Live Feed Data
+// 6. Live Feed Data (UPDATED TO FETCH NAMES)
 export const getLiveFeed = async () => {
   const [logs, interactions] = await Promise.all([
     supabase.from('visit_logs').select('*').order('visited_at', { ascending: false }).limit(20),
+    // UPDATED: Fetch business_name here too
     supabase.from('business_interactions').select('*').order('created_at', { ascending: false }).limit(20)
   ]);
 
-  // Merge and sort
   const feed = [
     ...(logs.data || []).map((l: any) => ({ ...l, type: 'visit', time: l.visited_at })),
     ...(interactions.data || []).map((i: any) => ({ ...i, type: 'interaction', time: i.created_at }))
@@ -137,7 +153,7 @@ export const getLiveFeed = async () => {
 };
 
 export const getLiveUserCount = async () => {
-  const threshold = new Date(Date.now() - 60000).toISOString(); // 1 min
+  const threshold = new Date(Date.now() - 60000).toISOString();
   const { count } = await supabase
     .from('live_users')
     .select('*', { count: 'exact', head: true })
@@ -157,7 +173,6 @@ export const signOut = async () => {
   await supabase.auth.signOut();
 };
 
-// FIX: Added this function back so App.tsx can use it
 export const getCurrentUser = async (): Promise<User | null> => {
   const { data: { user } } = await supabase.auth.getUser();
   return user;
