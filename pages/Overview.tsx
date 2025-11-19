@@ -39,7 +39,7 @@ const Overview: React.FC = () => {
           </div>
         </div>
         {/* Decorative background blob */}
-        <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-5" style={{ backgroundColor: colorClass }}></div>
+        <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-5 pointer-events-none" style={{ backgroundColor: colorClass }}></div>
       </CardContent>
     </Card>
   );
