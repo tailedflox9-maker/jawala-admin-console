@@ -96,7 +96,19 @@ const Layout: React.FC<LayoutProps> = ({ user, currentView, onNavigate, children
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            transition: 'none',
+            transition: 'none !important',
+          },
+        },
+      },
+      MuiCard: {
+        defaultProps: {
+          elevation: 0,
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            transition: 'none !important',
           },
         },
       },
@@ -128,11 +140,8 @@ const Layout: React.FC<LayoutProps> = ({ user, currentView, onNavigate, children
   const drawer = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
       <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h5" fontWeight="bold" color="primary" sx={{ mb: 0.5 }}>
+        <Typography variant="h5" fontWeight="bold" color="primary">
           Jawala Admin
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Business Directory Console
         </Typography>
       </Box>
 
