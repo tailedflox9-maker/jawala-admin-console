@@ -35,10 +35,6 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Determine background color based on localStorage for the loading screen
-  // This ensures the spinner has the right background before React fully takes over
-  const isDark = localStorage.getItem('darkMode') !== 'false'; // Defaults to true/dark
-
   if (loading) {
     return (
       <Box 
@@ -47,18 +43,16 @@ const App: React.FC = () => {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          bgcolor: isDark ? '#0A1929' : '#f3f6f9', // Manual theme match
-          color: '#3399FF'
+          bgcolor: 'background.default'
         }}
       >
-        <CircularProgress size={40} color="inherit" />
+        <CircularProgress size={40} />
       </Box>
     );
   }
 
   if (!user) {
-    // Pass a key to force re-render on logout
-    return <Login key="login" onSuccess={() => window.location.reload()} />;
+    return <Login onSuccess={() => window.location.reload()} />;
   }
 
   const renderView = () => {
