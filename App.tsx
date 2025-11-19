@@ -5,6 +5,7 @@ import Overview from './pages/Overview';
 import LiveMonitor from './pages/LiveMonitor';
 import BusinessPerformance from './pages/BusinessPerformance';
 import UserInsights from './pages/UserInsights';
+import AiSearchAnalytics from './pages/AiSearchAnalytics'; // ADD THIS
 import { getCurrentUser, supabase } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
 import { Box, CircularProgress } from '@mui/material';
@@ -61,6 +62,7 @@ const App: React.FC = () => {
       case 'live': return <LiveMonitor />;
       case 'performance': return <BusinessPerformance />;
       case 'audience': return <UserInsights />;
+      case 'ai-search': return <AiSearchAnalytics />; // ADD THIS
       default: return <Overview />;
     }
   };
