@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { AnalyticsSummary, VisitLog, UserTracking } from './types';
+import { User } from '@supabase/supabase-js';
 
 // --- SAFE ENVIRONMENT ACCESS ---
 const getEnv = (key: string) => {
@@ -155,4 +155,10 @@ export const signIn = async (email: string, password: string) => {
 
 export const signOut = async () => {
   await supabase.auth.signOut();
+};
+
+// FIX: Added this function back so App.tsx can use it
+export const getCurrentUser = async (): Promise<User | null> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
 };
