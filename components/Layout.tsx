@@ -1,232 +1,261 @@
-// Material-UI Wrapper Components
-import React from 'react';
+import React, { useState } from 'react';
+import { signOut } from '../supabaseClient';
+import { User } from '@supabase/supabase-js';
 import {
-  Button as MuiButton,
-  TextField,
-  Select as MuiSelect,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Card as MuiCard,
-  CardContent as MuiCardContent,
-  CardHeader as MuiCardHeader,
-  Table as MuiTable,
-  TableBody as MuiTableBody,
-  TableCell as MuiTableCell,
-  TableContainer,
-  TableHead as MuiTableHead,
-  TableRow as MuiTableRow,
-  Paper,
-  Chip,
-  Tabs as MuiTabs,
-  Tab,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Box,
-  Skeleton as MuiSkeleton,
-  ButtonProps as MuiButtonProps,
-  TextFieldProps,
-  SelectProps as MuiSelectProps,
+  Avatar,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import {
+  Menu as MenuIcon,
+  Dashboard,
+  Visibility,
+  TrendingUp,
+  People,
+  Logout,
+  DarkMode,
+  LightMode,
+} from '@mui/icons-material';
 
-// Button
-export const Button = React.forwardRef<HTMLButtonElement, MuiButtonProps>(
-  ({ variant = 'contained', ...props }, ref) => (
-    <MuiButton ref={ref} variant={variant} {...props} />
-  )
-);
+interface LayoutProps {
+  user: User;
+  currentView: string;
+  onNavigate: (view: string) => void;
+  children: React.ReactNode;
+}
 
-// Input
-export const Input = React.forwardRef<HTMLInputElement, TextFieldProps>(
-  ({ ...props }, ref) => (
-    <TextField 
-      inputRef={ref} 
-      fullWidth 
-      size="small" 
-      {...props} 
-      sx={{
-        '& .MuiInputBase-input': { color: 'inherit' },
-        '& .MuiInputLabel-root': { color: 'inherit', opacity: 0.7 },
-        '& .MuiOutlinedInput-notchedOutline': { borderColor: 'hsl(var(--border))' }
-      }}
-    />
-  )
-);
+const Layout: React.FC<LayoutProps> = ({ user, currentView, onNavigate, children }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [darkMode, setDarkMode] = useState(
+    document.documentElement.classList.contains('dark')
+  );
 
-// Select
-export const Select = React.forwardRef<HTMLSelectElement, MuiSelectProps & { children?: React.ReactNode }>(
-  ({ children, ...props }, ref) => (
-    <FormControl fullWidth size="small">
-      {props.label && <InputLabel sx={{ color: 'inherit', opacity: 0.7 }}>{props.label}</InputLabel>}
-      <MuiSelect 
-        ref={ref as any} 
-        {...props}
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const drawerWidth = 260;
+
+  const menuItems = [
+    { id: 'overview', label: 'Overview', icon: <Dashboard /> },
+    { id: 'live', label: 'Live Monitor', icon: <Visibility /> },
+    { id: 'performance', label: 'Business Performance', icon: <TrendingUp /> },
+    { id: 'audience', label: 'User Insights', icon: <People /> },
+  ];
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    handleMenuClose();
+    await signOut();
+    window.location.reload();
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle('dark');
+    handleMenuClose();
+  };
+
+  const drawer = (
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
+        <Typography variant="h5" fontWeight="bold" color="primary">
+          Jawala Admin
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          Business Directory Console
+        </Typography>
+      </Box>
+
+      <List sx={{ flex: 1, pt: 2 }}>
+        {menuItems.map((item) => (
+          <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
+            <ListItemButton
+              selected={currentView === item.id}
+              onClick={() => {
+                onNavigate(item.id);
+                if (isMobile) setMobileOpen(false);
+              }}
+              sx={{
+                mx: 1,
+                borderRadius: 2,
+                '&.Mui-selected': {
+                  backgroundColor: 'primary.main',
+                  color: 'primary.contrastText',
+                  '&:hover': {
+                    backgroundColor: 'primary.dark',
+                  },
+                  '& .MuiListItemIcon-root': {
+                    color: 'primary.contrastText',
+                  },
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 40,
+                  color: currentView === item.id ? 'inherit' : 'text.secondary',
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.label} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+
+      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
+            {user.email?.charAt(0).toUpperCase()}
+          </Avatar>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="body2" fontWeight="medium" noWrap>
+              {user.email}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Administrator
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  );
+
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      {/* App Bar */}
+      <AppBar
+        position="fixed"
         sx={{
-            color: 'inherit',
-            '.MuiOutlinedInput-notchedOutline': { borderColor: 'hsl(var(--border))' },
-            '.MuiSvgIcon-root': { color: 'inherit' }
-        }}
-        MenuProps={{
-            PaperProps: {
-                className: '!bg-card !text-card-foreground border border-border'
-            }
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          boxShadow: 1,
         }}
       >
-        {children}
-      </MuiSelect>
-    </FormControl>
-  )
-);
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { md: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
 
-export { MenuItem as SelectItem };
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            {menuItems.find((item) => item.id === currentView)?.label || 'Dashboard'}
+          </Typography>
 
-// Card - FIXED: Added !bg-card and !text-card-foreground
-export const Card = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof MuiCard> & { className?: string }>(
-  ({ className, ...props }, ref) => (
-    <MuiCard 
-      ref={ref} 
-      className={`!bg-card !text-card-foreground ${className || ''}`} 
-      {...props} 
-    />
-  )
-);
+          <IconButton onClick={toggleDarkMode} color="inherit">
+            {darkMode ? <LightMode /> : <DarkMode />}
+          </IconButton>
 
-export const CardHeader = React.forwardRef<HTMLDivElement, { title?: React.ReactNode; subheader?: React.ReactNode; className?: string }>(
-  ({ title, subheader, className, ...props }, ref) => (
-    <MuiCardHeader 
-      ref={ref} 
-      title={<span className="text-foreground font-semibold">{title}</span>} 
-      subheader={<span className="text-muted-foreground text-sm">{subheader}</span>} 
-      className={className} 
-      {...props} 
-    />
-  )
-);
+          <IconButton onClick={handleMenuOpen} color="inherit">
+            <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
+              {user.email?.charAt(0).toUpperCase()}
+            </Avatar>
+          </IconButton>
 
-export const CardTitle = ({ children }: { children: React.ReactNode }) => <>{children}</>;
-export const CardDescription = ({ children }: { children: React.ReactNode }) => <>{children}</>;
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleLogout}>
+              <Logout fontSize="small" sx={{ mr: 1 }} />
+              Logout
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
 
-export const CardContent = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof MuiCardContent>>(
-  ({ ...props }, ref) => <MuiCardContent ref={ref} {...props} />
-);
+      {/* Drawer */}
+      <Box
+        component="nav"
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+      >
+        {/* Mobile drawer */}
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
 
-// Table - FIXED: Added background colors to container and cells
-export const Table = ({ children }: { children: React.ReactNode }) => (
-  <TableContainer component={Paper} className="!bg-card !text-card-foreground !shadow-none border-none">
-    <MuiTable>{children}</MuiTable>
-  </TableContainer>
-);
+        {/* Desktop drawer */}
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              borderRight: 1,
+              borderColor: 'divider',
+            },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
 
-export const TableHeader = MuiTableHead;
-export const TableBody = MuiTableBody;
-export const TableRow = MuiTableRow;
-export const TableHead = ({ children, ...props }: any) => (
-    <MuiTableCell {...props} sx={{ color: 'hsl(var(--muted-foreground))', borderColor: 'hsl(var(--border))' }}>
-        {children}
-    </MuiTableCell>
-);
-export const TableCell = ({ children, ...props }: any) => (
-    <MuiTableCell {...props} sx={{ color: 'hsl(var(--foreground))', borderColor: 'hsl(var(--border))' }}>
-        {children}
-    </MuiTableCell>
-);
-
-// Badge
-export const Badge = ({ 
-  children, 
-  variant = 'default',
-  ...props 
-}: { 
-  children?: React.ReactNode; 
-  variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success' | 'warning';
-  className?: string;
-}) => {
-  const colorMap = {
-    default: 'primary',
-    secondary: 'secondary',
-    outline: 'default',
-    destructive: 'error',
-    success: 'success',
-    warning: 'warning',
-  };
-  
-  return <Chip label={children} color={colorMap[variant] as any} size="small" {...props} />;
-};
-
-// Tabs
-export const Tabs = ({ 
-  value, 
-  onValueChange, 
-  children 
-}: { 
-  value: string; 
-  onValueChange: (v: string) => void; 
-  children: React.ReactNode;
-}) => {
-  return <Box sx={{ width: '100%' }}>{children}</Box>;
-};
-
-export const TabsList = ({ 
-  value,
-  onChange,
-  children 
-}: { 
-  value: string;
-  onChange: (v: string) => void;
-  children: React.ReactNode;
-}) => (
-  <Box sx={{ borderBottom: 1, borderColor: 'hsl(var(--border))', mb: 3 }}>
-    <MuiTabs 
-        value={value} 
-        onChange={(_, newValue) => onChange(newValue)} 
-        variant="scrollable"
+      {/* Main content */}
+      <Box
+        component="main"
         sx={{
-            '& .MuiTab-root': { color: 'hsl(var(--muted-foreground))' },
-            '& .Mui-selected': { color: 'hsl(var(--primary)) !important' },
-            '& .MuiTabs-indicator': { backgroundColor: 'hsl(var(--primary))' }
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          minHeight: '100vh',
+          bgcolor: 'background.default',
         }}
-    >
-      {children}
-    </MuiTabs>
-  </Box>
-);
-
-export const TabsTrigger = ({ 
-  value, 
-  children,
-  icon 
-}: { 
-  value: string; 
-  children: React.ReactNode;
-  icon?: React.ReactNode;
-}) => (
-  <Tab 
-    value={value} 
-    label={
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        {icon}
+      >
+        <Toolbar />
         {children}
       </Box>
-    } 
-  />
-);
-
-export const TabsContent = ({ 
-  value, 
-  active, 
-  children 
-}: { 
-  value: string; 
-  active: boolean; 
-  children: React.ReactNode;
-}) => {
-  if (!active) return null;
-  return <Box>{children}</Box>;
+    </Box>
+  );
 };
 
-// Skeleton
-export const Skeleton = ({ className, ...props }: { className?: string; width?: number | string; height?: number | string }) => (
-  <MuiSkeleton 
-    variant="rectangular" 
-    {...props} 
-    sx={{ bgcolor: 'hsl(var(--muted))' }}
-  />
-);
+export default Layout;
