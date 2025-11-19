@@ -31,6 +31,7 @@ import {
   Logout,
   Brightness4,
   Brightness7,
+  Search,
 } from '@mui/icons-material';
 
 interface LayoutProps {
