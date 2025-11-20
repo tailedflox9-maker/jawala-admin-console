@@ -24,6 +24,10 @@ const Overview: React.FC = () => {
       setLoading(false);
     };
     fetchData();
+    
+    // Auto-refresh every 10 seconds
+    const interval = setInterval(fetchData, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   // Enhanced Stat Card with Material Design
@@ -261,6 +265,10 @@ const Overview: React.FC = () => {
             <Box sx={{ height: { xs: 280, sm: 320, md: 340 }, width: '100%' }}>
               {loading ? (
                 <Skeleton variant="rectangular" width="100%" height="100%" />
+              ) : traffic.length === 0 ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'text.secondary' }}>
+                  <Typography variant="body2">No traffic data available</Typography>
+                </Box>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={traffic} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
