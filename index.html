@@ -18,13 +18,13 @@
 
     <style>
       /* Base defaults to prevent white flash */
-      html { background-color: #0A1929; } 
+      html { background-color: #141413; } 
       body {
         margin: 0;
         font-family: 'Plus Jakarta Sans', 'Roboto', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        background-color: #0A1929; /* Match dark theme default */
+        background-color: #141413; /* Updated to #141413 */
       }
       
       * { box-sizing: border-box; }
@@ -41,7 +41,7 @@
           // Default to TRUE (Dark Mode) if not set, or if set to true
           if (localState === 'true' || (localState === null)) {
             document.documentElement.classList.add('dark');
-            document.body.style.backgroundColor = '#0A1929';
+            document.body.style.backgroundColor = '#141413'; /* Updated to #141413 */
           } else {
             document.documentElement.classList.remove('dark');
             document.body.style.backgroundColor = '#f3f6f9';
