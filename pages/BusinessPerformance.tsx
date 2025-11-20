@@ -16,7 +16,7 @@ const BusinessPerformance: React.FC = () => {
     });
   }, []);
 
-  // Top 3 Winners Component
+  // Top 3 Winners Component - MOBILE OPTIMIZED
   const TopWinners = () => {
     const topThree = data.slice(0, 3);
     
@@ -28,29 +28,33 @@ const BusinessPerformance: React.FC = () => {
     ];
 
     return (
-      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, mb: 4 }}>
+      <Box sx={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: { xs: 2, sm: 2.5, md: 3 },
+        mb: { xs: 3, sm: 4 }
+      }}>
         {topThree.map((business, index) => (
           <Paper
             key={business.id}
             elevation={index === 0 ? 8 : 3}
             sx={{
-              p: 3,
+              p: { xs: 2, sm: 2.5, md: 3 },
               background: index === 0 ? gradients[0] : 'background.paper',
               border: index === 0 ? 'none' : 1,
               borderColor: 'divider',
               position: 'relative',
               overflow: 'hidden',
-              transform: index === 0 ? 'scale(1.05)' : 'scale(1)',
             }}
           >
             {/* Medal Badge */}
             <Box
               sx={{
                 position: 'absolute',
-                top: -10,
-                right: -10,
-                fontSize: '4rem',
-                opacity: 0.3,
+                top: { xs: -5, sm: -10 },
+                right: { xs: -5, sm: -10 },
+                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
+                opacity: 0.25,
                 transform: 'rotate(15deg)',
               }}
             >
@@ -58,18 +62,26 @@ const BusinessPerformance: React.FC = () => {
             </Box>
 
             <Box sx={{ position: 'relative', zIndex: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'flex-start',
+                gap: { xs: 1.5, sm: 2 },
+                mb: { xs: 2, sm: 2.5 },
+                flexWrap: 'wrap'
+              }}>
                 <Avatar
                   sx={{
                     bgcolor: index === 0 ? 'rgba(255,255,255,0.3)' : 'primary.main',
-                    width: 48,
-                    height: 48,
+                    width: { xs: 36, sm: 44, md: 48 },
+                    height: { xs: 36, sm: 44, md: 48 },
                     fontWeight: 900,
-                    fontSize: '1.5rem',
+                    fontSize: { xs: '1.1rem', sm: '1.3rem', md: '1.5rem' },
+                    flexShrink: 0
                   }}
                 >
                   #{index + 1}
                 </Avatar>
+                
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography 
                     variant="caption" 
@@ -77,7 +89,10 @@ const BusinessPerformance: React.FC = () => {
                       color: index === 0 ? 'rgba(0,0,0,0.7)' : 'text.secondary',
                       fontWeight: 700,
                       textTransform: 'uppercase',
-                      letterSpacing: 1,
+                      letterSpacing: 0.8,
+                      fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' },
+                      display: 'block',
+                      mb: 0.5
                     }}
                   >
                     {index === 0 ? 'Top Performer' : `Rank ${index + 1}`}
@@ -85,8 +100,12 @@ const BusinessPerformance: React.FC = () => {
                   <Typography 
                     variant="h6" 
                     fontWeight={700}
-                    noWrap
-                    sx={{ color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary' }}
+                    sx={{ 
+                      color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary',
+                      fontSize: { xs: '0.9rem', sm: '1.05rem', md: '1.15rem' },
+                      wordBreak: 'break-word',
+                      mb: 0.5
+                    }}
                   >
                     {business.name}
                   </Typography>
@@ -96,25 +115,33 @@ const BusinessPerformance: React.FC = () => {
                     sx={{ 
                       color: index === 0 ? 'rgba(0,0,0,0.6)' : 'text.secondary',
                       display: 'block',
+                      fontSize: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' }
                     }}
                   >
                     ID: {business.id.substring(0, 8)}...
                   </Typography>
                 </Box>
+
+                <Typography 
+                  variant="h3" 
+                  fontWeight={900} 
+                  sx={{ 
+                    color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary',
+                    fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+                    width: { xs: '100%', sm: 'auto' },
+                    textAlign: { xs: 'center', sm: 'right' },
+                    mt: { xs: 1, sm: 0 }
+                  }}
+                >
+                  {business.total.toLocaleString()}
+                </Typography>
               </Box>
 
-              <Typography 
-                variant="h3" 
-                fontWeight={900} 
-                sx={{ 
-                  mb: 2,
-                  color: index === 0 ? 'rgba(0,0,0,0.9)' : 'text.primary',
-                }}
-              >
-                {business.total.toLocaleString()}
-              </Typography>
-
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5 }}>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)' },
+                gap: { xs: 1, sm: 1.25, md: 1.5 }
+              }}>
                 <MetricChip 
                   label="Views" 
                   value={business.views} 
@@ -151,18 +178,21 @@ const BusinessPerformance: React.FC = () => {
     <Box
       sx={{
         bgcolor: goldMode ? 'rgba(255,255,255,0.3)' : `${color}15`,
-        px: 1.5,
-        py: 1,
+        px: { xs: 1, sm: 1.25, md: 1.5 },
+        py: { xs: 0.75, sm: 0.875, md: 1 },
         borderRadius: 2,
         border: goldMode ? '1px solid rgba(255,255,255,0.4)' : 'none',
+        textAlign: 'center'
       }}
     >
       <Typography 
         variant="caption" 
         sx={{ 
           color: goldMode ? 'rgba(0,0,0,0.7)' : 'text.secondary',
-          fontSize: '0.7rem',
+          fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' },
           fontWeight: 700,
+          display: 'block',
+          mb: 0.25
         }}
       >
         {label}
@@ -170,7 +200,10 @@ const BusinessPerformance: React.FC = () => {
       <Typography 
         variant="h6" 
         fontWeight={900}
-        sx={{ color: goldMode ? 'rgba(0,0,0,0.9)' : color }}
+        sx={{ 
+          color: goldMode ? 'rgba(0,0,0,0.9)' : color,
+          fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' }
+        }}
       >
         {value}
       </Typography>
@@ -180,16 +213,27 @@ const BusinessPerformance: React.FC = () => {
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
       {/* Header */}
-      <Box sx={{ mb: 5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-          <EmojiEvents sx={{ fontSize: 40, color: 'primary.main' }} />
+      <Box sx={{ mb: { xs: 3, sm: 4, md: 5 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: { xs: 1.5, sm: 2 }, 
+          mb: 1,
+          flexWrap: 'wrap'
+        }}>
+          <EmojiEvents sx={{ 
+            fontSize: { xs: 32, sm: 36, md: 40 }, 
+            color: 'primary.main',
+            flexShrink: 0
+          }} />
           <Typography
             variant="h3"
             sx={{
               fontWeight: 900,
               color: 'text.primary',
               letterSpacing: '-0.02em',
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem', lg: '3rem' },
+              wordBreak: 'break-word'
             }}
           >
             Business Performance
@@ -199,8 +243,8 @@ const BusinessPerformance: React.FC = () => {
           variant="body1" 
           sx={{ 
             color: 'text.secondary',
-            fontSize: '1.05rem',
-            ml: 7,
+            fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1.05rem' },
+            ml: { xs: 0, sm: 6, md: 7 }
           }}
         >
           Top 15 businesses by user engagement metrics
@@ -216,25 +260,34 @@ const BusinessPerformance: React.FC = () => {
         sx={{
           border: 1,
           borderColor: 'divider',
-          mb: 4,
+          mb: { xs: 3, sm: 4 },
         }}
       >
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" fontWeight={700} gutterBottom>
+        <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+          <Box sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }}>
+            <Typography 
+              variant="h6" 
+              fontWeight={700} 
+              gutterBottom
+              sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+            >
               Engagement Distribution
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
+            >
               Stacked view of all interaction types across top businesses
             </Typography>
           </Box>
 
-          <Box sx={{ height: 450 }}>
+          <Box sx={{ height: { xs: 300, sm: 380, md: 450 }, width: '100%', overflowX: 'auto' }}>
             {loading ? (
               <Skeleton variant="rectangular" width="100%" height="100%" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={300}>
+                <BarChart data={data} margin={{ top: 20, right: 10, left: -10, bottom: 80 }}>
                   <CartesianGrid 
                     strokeDasharray="3 3" 
                     stroke="hsl(var(--border))" 
@@ -246,9 +299,10 @@ const BusinessPerformance: React.FC = () => {
                     angle={-45}
                     textAnchor="end"
                     height={100}
+                    interval={0}
                     tick={{
                       fill: 'hsl(var(--muted-foreground))',
-                      fontSize: 11,
+                      fontSize: 10,
                     }}
                     axisLine={false}
                     tickLine={false}
@@ -256,7 +310,7 @@ const BusinessPerformance: React.FC = () => {
                   <YAxis 
                     tick={{
                       fill: 'hsl(var(--muted-foreground))',
-                      fontSize: 12,
+                      fontSize: 11,
                     }}
                     axisLine={false}
                     tickLine={false}
@@ -269,20 +323,22 @@ const BusinessPerformance: React.FC = () => {
                       borderRadius: 12,
                       boxShadow: '0 8px 16px rgba(0,0,0,0.12)',
                       border: '1px solid hsl(var(--border))',
+                      fontSize: 13
                     }}
                     itemStyle={{
                       color: 'hsl(var(--foreground))',
                       fontWeight: 600,
-                      fontSize: 14,
+                      fontSize: 12,
                     }}
                     labelStyle={{
                       color: 'hsl(var(--muted-foreground))',
                       marginBottom: 8,
                       fontWeight: 500,
+                      fontSize: 11
                     }}
                   />
                   <Legend 
-                    wrapperStyle={{ paddingTop: 20 }} 
+                    wrapperStyle={{ paddingTop: 20, fontSize: 12 }} 
                     iconType="circle"
                   />
                   <Bar 
@@ -320,7 +376,7 @@ const BusinessPerformance: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Detailed Table */}
+      {/* Detailed Table - MOBILE OPTIMIZED */}
       <Card
         elevation={0}
         sx={{
@@ -328,13 +384,29 @@ const BusinessPerformance: React.FC = () => {
           borderColor: 'divider',
         }}
       >
-        <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            mb: { xs: 2, sm: 2.5, md: 3 },
+            flexWrap: 'wrap',
+            gap: 2
+          }}>
             <Box>
-              <Typography variant="h6" fontWeight={700} gutterBottom>
+              <Typography 
+                variant="h6" 
+                fontWeight={700} 
+                gutterBottom
+                sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
+              >
                 Detailed Interaction Report
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
+              >
                 Complete breakdown per business
               </Typography>
             </Box>
@@ -347,8 +419,114 @@ const BusinessPerformance: React.FC = () => {
             />
           </Box>
 
-          <Box sx={{ overflowX: 'auto' }}>
-            <Box component="table" sx={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+          {/* MOBILE-FIRST: Card View for small screens, Table for larger */}
+          
+          {/* Mobile Card View (xs, sm) */}
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+            {data.map((row, index) => (
+              <Paper
+                key={row.id}
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mb: 2,
+                  border: 1,
+                  borderColor: index < 3 ? 'primary.main' : 'divider',
+                  borderRadius: 2,
+                  bgcolor: index < 3 ? 'primary.main' : 'background.paper',
+                  color: index < 3 ? 'primary.contrastText' : 'text.primary',
+                }}
+              >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Chip
+                    label={`#${index + 1}`}
+                    size="small"
+                    sx={{
+                      bgcolor: index < 3 ? 'rgba(255,255,255,0.2)' : 'primary.main',
+                      color: index < 3 ? 'white' : 'primary.contrastText',
+                      fontWeight: 900,
+                    }}
+                  />
+                  <Typography variant="h5" fontWeight={900} sx={{ color: 'inherit' }}>
+                    {row.total}
+                  </Typography>
+                </Box>
+                
+                <Typography variant="body1" fontWeight={700} sx={{ color: 'inherit', mb: 0.5 }}>
+                  {row.name}
+                </Typography>
+                <Typography 
+                  variant="caption" 
+                  fontFamily="monospace"
+                  sx={{ color: 'inherit', opacity: 0.7, display: 'block', mb: 2 }}
+                >
+                  {row.id.substring(0, 16)}...
+                </Typography>
+
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1 }}>
+                  <Box sx={{ 
+                    bgcolor: index < 3 ? 'rgba(255,255,255,0.15)' : '#64748b15',
+                    p: 1.5,
+                    borderRadius: 1.5,
+                    textAlign: 'center'
+                  }}>
+                    <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.8, fontSize: '0.65rem', display: 'block' }}>
+                      Views
+                    </Typography>
+                    <Typography variant="h6" fontWeight={800} sx={{ color: 'inherit' }}>
+                      {row.views}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ 
+                    bgcolor: index < 3 ? 'rgba(255,255,255,0.15)' : '#2196F315',
+                    p: 1.5,
+                    borderRadius: 1.5,
+                    textAlign: 'center'
+                  }}>
+                    <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.8, fontSize: '0.65rem', display: 'block' }}>
+                      Calls
+                    </Typography>
+                    <Typography variant="h6" fontWeight={800} sx={{ color: 'inherit' }}>
+                      {row.calls}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ 
+                    bgcolor: index < 3 ? 'rgba(255,255,255,0.15)' : '#22c55e15',
+                    p: 1.5,
+                    borderRadius: 1.5,
+                    textAlign: 'center'
+                  }}>
+                    <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.8, fontSize: '0.65rem', display: 'block' }}>
+                      WhatsApp
+                    </Typography>
+                    <Typography variant="h6" fontWeight={800} sx={{ color: 'inherit' }}>
+                      {row.whatsapp}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ 
+                    bgcolor: index < 3 ? 'rgba(255,255,255,0.15)' : '#a855f715',
+                    p: 1.5,
+                    borderRadius: 1.5,
+                    textAlign: 'center'
+                  }}>
+                    <Typography variant="caption" sx={{ color: 'inherit', opacity: 0.8, fontSize: '0.65rem', display: 'block' }}>
+                      Shares
+                    </Typography>
+                    <Typography variant="h6" fontWeight={800} sx={{ color: 'inherit' }}>
+                      {row.shares}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Paper>
+            ))}
+          </Box>
+
+          {/* Desktop Table View (md+) */}
+          <Box sx={{ display: { xs: 'none', md: 'block' }, overflowX: 'auto' }}>
+            <Box component="table" sx={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px', minWidth: 650 }}>
               <Box component="thead">
                 <Box component="tr">
                   <Box component="th" sx={{ textAlign: 'left', pb: 2, pl: 2 }}>
