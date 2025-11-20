@@ -82,10 +82,10 @@ const menuItems = [
         main: '#3b82f6',
       },
       background: {
-        default: darkMode ? '#000000' : '#f8fafc',
-        paper: darkMode ? '#000000' : '#ffffff',
+        default: darkMode ? '#141413' : '#f8fafc',
+        paper: darkMode ? '#30302e' : '#ffffff',
       },
-      divider: darkMode ? '#1a1a1a' : 'rgba(0, 0, 0, 0.12)',
+      divider: darkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.12)',
       text: {
         primary: darkMode ? '#ffffff' : '#000000',
         secondary: darkMode ? '#a0a0a0' : '#64748b',
