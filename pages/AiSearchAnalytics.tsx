@@ -13,14 +13,11 @@ import {
   Grid,
   Chip,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   LinearProgress,
   Grow,
+  Avatar,
+  Collapse,
+  IconButton,
 } from '@mui/material';
 import {
   Search,
@@ -28,6 +25,11 @@ import {
   AccessTime,
   TrendingUp,
   Warning,
+  ExpandMore,
+  Person,
+  CalendarToday,
+  CheckCircle,
+  Cancel,
 } from '@mui/icons-material';
 
 const AiSearchAnalytics: React.FC = () => {
@@ -36,6 +38,7 @@ const AiSearchAnalytics: React.FC = () => {
   const [popularSearches, setPopularSearches] = useState<any[]>([]);
   const [failedSearches, setFailedSearches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -59,6 +62,10 @@ const AiSearchAnalytics: React.FC = () => {
       console.error('Error fetching AI search data:', error);
       setLoading(false);
     }
+  };
+
+  const handleExpandClick = (index: number) => {
+    setExpandedCard(expandedCard === index ? null : index);
   };
 
   if (loading) {
@@ -110,191 +117,182 @@ const AiSearchAnalytics: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - MOBILE OPTIMIZED */}
       <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
         <Grid item xs={6} sm={6} md={3}>
-          <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+          <Card elevation={0} sx={{ border: 1, borderColor: 'divider', height: '100%' }}>
             <CardContent sx={{ 
-              p: { xs: 2, sm: 2.5 },
-              '&:last-child': { pb: { xs: 2, sm: 2.5 } }
+              p: { xs: 1.5, sm: 2, md: 2.5 },
+              '&:last-child': { pb: { xs: 1.5, sm: 2, md: 2.5 } }
             }}>
               <Box sx={{ 
                 display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                mb: { xs: 1.5, sm: 2 },
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: { xs: 1, sm: 0 }
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center'
               }}>
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary" 
-                  fontWeight={700} 
-                  letterSpacing={1}
-                  sx={{ 
-                    fontSize: { xs: '0.65rem', sm: '0.7rem' },
-                    order: { xs: 2, sm: 1 }
-                  }}
-                >
-                  TOTAL SEARCHES
-                </Typography>
                 <Search 
                   color="primary" 
                   sx={{ 
-                    fontSize: { xs: 20, sm: 24 },
-                    order: { xs: 1, sm: 2 }
+                    fontSize: { xs: 24, sm: 28, md: 32 },
+                    mb: 1
                   }} 
                 />
+                <Typography 
+                  variant="caption" 
+                  color="text.secondary" 
+                  fontWeight={700} 
+                  letterSpacing={0.8}
+                  sx={{ 
+                    fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' },
+                    mb: 1
+                  }}
+                >
+                  TOTAL
+                </Typography>
+                <Typography 
+                  variant="h3" 
+                  fontWeight={900}
+                  sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' } }}
+                >
+                  {stats?.total || 0}
+                </Typography>
               </Box>
-              <Typography 
-                variant="h3" 
-                fontWeight={900}
-                sx={{ fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem', lg: '3rem' } }}
-              >
-                {stats?.total || 0}
-              </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={6} sm={6} md={3}>
-          <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+          <Card elevation={0} sx={{ border: 1, borderColor: 'divider', height: '100%' }}>
             <CardContent sx={{ 
-              p: { xs: 2, sm: 2.5 },
-              '&:last-child': { pb: { xs: 2, sm: 2.5 } }
+              p: { xs: 1.5, sm: 2, md: 2.5 },
+              '&:last-child': { pb: { xs: 1.5, sm: 2, md: 2.5 } }
             }}>
               <Box sx={{ 
                 display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                mb: { xs: 1.5, sm: 2 },
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: { xs: 1, sm: 0 }
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center'
               }}>
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary" 
-                  fontWeight={700} 
-                  letterSpacing={1}
-                  sx={{ 
-                    fontSize: { xs: '0.65rem', sm: '0.7rem' },
-                    order: { xs: 2, sm: 1 }
-                  }}
-                >
-                  SUCCESS RATE
-                </Typography>
                 <EmojiEvents 
                   sx={{ 
                     color: '#22c55e',
-                    fontSize: { xs: 20, sm: 24 },
-                    order: { xs: 1, sm: 2 }
+                    fontSize: { xs: 24, sm: 28, md: 32 },
+                    mb: 1
                   }} 
                 />
+                <Typography 
+                  variant="caption" 
+                  color="text.secondary" 
+                  fontWeight={700} 
+                  letterSpacing={0.8}
+                  sx={{ 
+                    fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' },
+                    mb: 1
+                  }}
+                >
+                  SUCCESS
+                </Typography>
+                <Typography 
+                  variant="h3" 
+                  fontWeight={900} 
+                  sx={{ 
+                    color: '#22c55e',
+                    fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
+                  }}
+                >
+                  {stats?.successRate}%
+                </Typography>
               </Box>
-              <Typography 
-                variant="h3" 
-                fontWeight={900} 
-                sx={{ 
-                  color: '#22c55e',
-                  fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem', lg: '3rem' }
-                }}
-              >
-                {stats?.successRate}%
-              </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={6} sm={6} md={3}>
-          <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+          <Card elevation={0} sx={{ border: 1, borderColor: 'divider', height: '100%' }}>
             <CardContent sx={{ 
-              p: { xs: 2, sm: 2.5 },
-              '&:last-child': { pb: { xs: 2, sm: 2.5 } }
+              p: { xs: 1.5, sm: 2, md: 2.5 },
+              '&:last-child': { pb: { xs: 1.5, sm: 2, md: 2.5 } }
             }}>
               <Box sx={{ 
                 display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                mb: { xs: 1.5, sm: 2 },
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: { xs: 1, sm: 0 }
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center'
               }}>
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary" 
-                  fontWeight={700} 
-                  letterSpacing={1}
-                  sx={{ 
-                    fontSize: { xs: '0.6rem', sm: '0.7rem' },
-                    order: { xs: 2, sm: 1 },
-                    textAlign: { xs: 'center', sm: 'left' }
-                  }}
-                >
-                  AVG RESPONSE
-                </Typography>
                 <AccessTime 
                   sx={{ 
                     color: '#2196F3',
-                    fontSize: { xs: 20, sm: 24 },
-                    order: { xs: 1, sm: 2 }
+                    fontSize: { xs: 24, sm: 28, md: 32 },
+                    mb: 1
                   }} 
                 />
+                <Typography 
+                  variant="caption" 
+                  color="text.secondary" 
+                  fontWeight={700} 
+                  letterSpacing={0.8}
+                  sx={{ 
+                    fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' },
+                    mb: 1
+                  }}
+                >
+                  AVG TIME
+                </Typography>
+                <Typography 
+                  variant="h3" 
+                  fontWeight={900} 
+                  sx={{ 
+                    color: '#2196F3',
+                    fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' }
+                  }}
+                >
+                  {stats?.avgResponseTime}ms
+                </Typography>
               </Box>
-              <Typography 
-                variant="h3" 
-                fontWeight={900} 
-                sx={{ 
-                  color: '#2196F3',
-                  fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem', lg: '2.5rem' }
-                }}
-              >
-                {stats?.avgResponseTime}ms
-              </Typography>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={6} sm={6} md={3}>
-          <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
+          <Card elevation={0} sx={{ border: 1, borderColor: 'divider', height: '100%' }}>
             <CardContent sx={{ 
-              p: { xs: 2, sm: 2.5 },
-              '&:last-child': { pb: { xs: 2, sm: 2.5 } }
+              p: { xs: 1.5, sm: 2, md: 2.5 },
+              '&:last-child': { pb: { xs: 1.5, sm: 2, md: 2.5 } }
             }}>
               <Box sx={{ 
                 display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center', 
-                mb: { xs: 1.5, sm: 2 },
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: { xs: 1, sm: 0 }
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center'
               }}>
+                <TrendingUp 
+                  sx={{ 
+                    color: '#22c55e',
+                    fontSize: { xs: 24, sm: 28, md: 32 },
+                    mb: 1
+                  }} 
+                />
                 <Typography 
                   variant="caption" 
                   color="text.secondary" 
                   fontWeight={700} 
-                  letterSpacing={1}
+                  letterSpacing={0.8}
                   sx={{ 
-                    fontSize: { xs: '0.65rem', sm: '0.7rem' },
-                    order: { xs: 2, sm: 1 }
+                    fontSize: { xs: '0.6rem', sm: '0.65rem', md: '0.7rem' },
+                    mb: 1
                   }}
                 >
-                  SUCCESSFUL
+                  PASSED
                 </Typography>
-                <TrendingUp 
-                  sx={{ 
-                    color: '#22c55e',
-                    fontSize: { xs: 20, sm: 24 },
-                    order: { xs: 1, sm: 2 }
-                  }} 
-                />
+                <Typography 
+                  variant="h3" 
+                  fontWeight={900}
+                  sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' } }}
+                >
+                  {stats?.successful || 0}
+                </Typography>
               </Box>
-              <Typography 
-                variant="h3" 
-                fontWeight={900}
-                sx={{ fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem', lg: '3rem' } }}
-              >
-                {stats?.successful || 0}
-              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -311,7 +309,7 @@ const AiSearchAnalytics: React.FC = () => {
                 gutterBottom
                 sx={{ fontSize: { xs: '1rem', sm: '1.15rem', md: '1.25rem' } }}
               >
-                🔥 Popular Search Queries
+                🔥 Popular Searches
               </Typography>
               <Typography 
                 variant="body2" 
@@ -337,17 +335,15 @@ const AiSearchAnalytics: React.FC = () => {
                       border: 1,
                       borderColor: 'divider',
                       '&:hover': { bgcolor: 'action.hover' },
-                      flexWrap: { xs: 'wrap', sm: 'nowrap' },
-                      gap: { xs: 1, sm: 0 }
+                      gap: 1.5
                     }}
                   >
                     <Box sx={{ 
                       display: 'flex', 
-                      gap: { xs: 1.5, sm: 2 }, 
+                      gap: 1.5,
                       alignItems: 'center', 
                       flex: 1, 
-                      minWidth: 0,
-                      width: { xs: '100%', sm: 'auto' }
+                      minWidth: 0
                     }}>
                       <Chip
                         label={`#${idx + 1}`}
@@ -355,26 +351,30 @@ const AiSearchAnalytics: React.FC = () => {
                         color={idx < 3 ? 'primary' : 'default'}
                         sx={{ 
                           fontWeight: 900,
-                          flexShrink: 0
+                          flexShrink: 0,
+                          minWidth: 36
                         }}
                       />
                       <Typography 
                         variant="body2" 
-                        fontWeight={600} 
-                        noWrap
-                        sx={{ fontSize: { xs: '0.875rem', sm: '0.938rem' } }}
+                        fontWeight={600}
+                        sx={{ 
+                          fontSize: { xs: '0.875rem', sm: '0.938rem' },
+                          wordBreak: 'break-word'
+                        }}
                       >
                         {search.search_query}
                       </Typography>
                     </Box>
                     <Chip
-                      label={`${search.search_count} searches`}
+                      label={search.search_count}
                       size="small"
                       color="primary"
                       variant="outlined"
                       sx={{ 
                         fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                        ml: { xs: 'auto', sm: 0 }
+                        fontWeight: 700,
+                        flexShrink: 0
                       }}
                     />
                   </Paper>
@@ -419,15 +419,17 @@ const AiSearchAnalytics: React.FC = () => {
                       border: 1,
                       borderColor: '#f4433620',
                       bgcolor: '#f4433610',
-                      gap: { xs: 1, sm: 2 }
+                      gap: 1.5
                     }}
                   >
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography 
                         variant="body2" 
-                        fontWeight={600} 
-                        noWrap
-                        sx={{ fontSize: { xs: '0.875rem', sm: '0.938rem' } }}
+                        fontWeight={600}
+                        sx={{ 
+                          fontSize: { xs: '0.875rem', sm: '0.938rem' },
+                          wordBreak: 'break-word'
+                        }}
                       >
                         {search.search_query}
                       </Typography>
@@ -448,7 +450,7 @@ const AiSearchAnalytics: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* Recent Searches Table */}
+      {/* Recent Searches - MOBILE OPTIMIZED WITH USER INFO */}
       <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
         <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
           <Typography 
@@ -467,77 +469,233 @@ const AiSearchAnalytics: React.FC = () => {
               fontSize: { xs: '0.813rem', sm: '0.875rem' }
             }}
           >
-            Latest 50 AI searches with full details
+            Latest 50 AI searches with full details including who searched
           </Typography>
 
-          <Box sx={{ overflowX: 'auto', mx: { xs: -2, sm: -2.5, md: -3 }, px: { xs: 2, sm: 2.5, md: 3 } }}>
-            <TableContainer>
-              <Table size="small" sx={{ minWidth: 650 }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell><strong>Time</strong></TableCell>
-                    <TableCell><strong>User</strong></TableCell>
-                    <TableCell><strong>Query</strong></TableCell>
-                    <TableCell align="center"><strong>Results</strong></TableCell>
-                    <TableCell align="center"><strong>Status</strong></TableCell>
-                    <TableCell align="center"><strong>Response Time</strong></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {searches.map((search, idx) => (
-                    <TableRow key={idx} hover>
-                      <TableCell>
-                        <Typography variant="caption" fontFamily="monospace" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
-                          {new Date(search.searched_at).toLocaleString()}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" noWrap sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}>
-                          {search.user_name || 'Anonymous'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
+          {/* Mobile Card View */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {searches.map((search, idx) => (
+              <Paper
+                key={idx}
+                elevation={0}
+                sx={{
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  transition: 'all 0.2s',
+                  '&:hover': {
+                    boxShadow: 2,
+                    borderColor: 'primary.main'
+                  }
+                }}
+              >
+                <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'flex-start',
+                    mb: 1.5,
+                    gap: 1
+                  }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
+                      <Avatar
+                        sx={{
+                          width: { xs: 36, sm: 40 },
+                          height: { xs: 36, sm: 40 },
+                          bgcolor: 'primary.main',
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
+                          fontWeight: 800,
+                          flexShrink: 0
+                        }}
+                      >
+                        {(search.user_name || 'A').charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography 
                           variant="body2" 
-                          fontWeight={600} 
-                          sx={{ 
-                            maxWidth: { xs: 150, sm: 200, md: 300 },
-                            fontSize: { xs: '0.813rem', sm: '0.875rem' }
-                          }}
+                          fontWeight={700}
+                          sx={{ fontSize: { xs: '0.875rem', sm: '0.938rem' } }}
                         >
-                          {search.search_query}
+                          {search.user_name || 'Anonymous'}
                         </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          label={`${search.businesses_count} found`}
-                          size="small"
-                          color={search.businesses_count > 0 ? 'success' : 'default'}
-                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
-                        <Chip
-                          label={search.search_success ? 'Success' : 'Failed'}
-                          size="small"
-                          color={search.search_success ? 'success' : 'error'}
-                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
-                        />
-                      </TableCell>
-                      <TableCell align="center">
                         <Typography 
                           variant="caption" 
-                          fontFamily="monospace"
+                          color="text.secondary"
                           sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                         >
-                          {search.response_time_ms || '-'}ms
+                          {new Date(search.searched_at).toLocaleString()}
                         </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                      </Box>
+                    </Box>
+                    
+                    <IconButton
+                      size="small"
+                      onClick={() => handleExpandClick(idx)}
+                      sx={{
+                        transform: expandedCard === idx ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.3s',
+                        flexShrink: 0
+                      }}
+                    >
+                      <ExpandMore fontSize="small" />
+                    </IconButton>
+                  </Box>
+
+                  <Box 
+                    sx={{ 
+                      bgcolor: 'action.hover',
+                      p: 1.5,
+                      borderRadius: 1.5,
+                      mb: 1.5
+                    }}
+                  >
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary"
+                      sx={{ 
+                        display: 'block',
+                        fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        mb: 0.5,
+                        letterSpacing: 0.5
+                      }}
+                    >
+                      Search Query
+                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      fontWeight={600}
+                      sx={{ fontSize: { xs: '0.875rem', sm: '0.938rem' } }}
+                    >
+                      {search.search_query}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: 1,
+                    flexWrap: 'wrap'
+                  }}>
+                    <Chip
+                      icon={search.search_success ? <CheckCircle /> : <Cancel />}
+                      label={search.search_success ? 'Success' : 'Failed'}
+                      size="small"
+                      color={search.search_success ? 'success' : 'error'}
+                      sx={{ 
+                        fontWeight: 700,
+                        fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                      }}
+                    />
+                    <Chip
+                      label={`${search.businesses_count} results`}
+                      size="small"
+                      color={search.businesses_count > 0 ? 'success' : 'default'}
+                      sx={{ 
+                        fontWeight: 700,
+                        fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                      }}
+                    />
+                    {search.response_time_ms && (
+                      <Chip
+                        icon={<AccessTime />}
+                        label={`${search.response_time_ms}ms`}
+                        size="small"
+                        variant="outlined"
+                        sx={{ 
+                          fontFamily: 'monospace',
+                          fontWeight: 700,
+                          fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                        }}
+                      />
+                    )}
+                  </Box>
+                </Box>
+
+                {/* Expandable Details */}
+                <Collapse in={expandedCard === idx} timeout="auto">
+                  <Box 
+                    sx={{ 
+                      bgcolor: 'action.hover',
+                      p: { xs: 1.5, sm: 2 },
+                      borderTop: 1,
+                      borderColor: 'divider'
+                    }}
+                  >
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary"
+                      sx={{ 
+                        display: 'block',
+                        fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                        fontWeight: 700,
+                        textTransform: 'uppercase',
+                        mb: 1,
+                        letterSpacing: 0.5
+                      }}
+                    >
+                      Additional Details
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Person sx={{ fontSize: 16, color: 'text.secondary' }} />
+                        <Typography 
+                          variant="caption"
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                        >
+                          <strong>User:</strong> {search.user_name || 'Anonymous User'}
+                        </Typography>
+                      </Box>
+                      
+                      {search.device_id && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography 
+                            variant="caption"
+                            sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                          >
+                            <strong>Device:</strong> {search.device_id.substring(0, 20)}...
+                          </Typography>
+                        </Box>
+                      )}
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CalendarToday sx={{ fontSize: 16, color: 'text.secondary' }} />
+                        <Typography 
+                          variant="caption"
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                        >
+                          <strong>Time:</strong> {new Date(search.searched_at).toLocaleString()}
+                        </Typography>
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Search sx={{ fontSize: 16, color: 'text.secondary' }} />
+                        <Typography 
+                          variant="caption"
+                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                        >
+                          <strong>Results Found:</strong> {search.businesses_count} businesses
+                        </Typography>
+                      </Box>
+
+                      {search.response_time_ms && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <AccessTime sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          <Typography 
+                            variant="caption"
+                            sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                          >
+                            <strong>Response Time:</strong> {search.response_time_ms}ms
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Box>
+                </Collapse>
+              </Paper>
+            ))}
           </Box>
         </CardContent>
       </Card>
