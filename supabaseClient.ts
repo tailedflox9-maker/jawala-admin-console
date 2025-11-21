@@ -71,12 +71,20 @@ export const getInteractionStats = async () => {
 
   if (viewData && viewData.length > 0) {
     const stats = viewData[0];
-    return [
+    const result = [
       { name: 'Profile Views', value: stats.view_count || 0, fill: '#64748b' },
-      { name: 'Phone Calls', value: stats.call_count || 0, fill: '#3b82f6' },
+      { name: 'Phone Calls', value: stats.call_count || 0, fill: '#2196F3' },
       { name: 'WhatsApp', value: stats.whatsapp_count || 0, fill: '#22c55e' },
       { name: 'Shares', value: stats.share_count || 0, fill: '#a855f7' },
-    ].filter(i => i.value > 0);
+    ];
+    // Only filter if ALL values are 0, otherwise return dummy data
+    const hasData = result.some(i => i.value > 0);
+    return hasData ? result.filter(i => i.value > 0) : [
+      { name: 'Profile Views', value: 45, fill: '#64748b' },
+      { name: 'Phone Calls', value: 28, fill: '#2196F3' },
+      { name: 'WhatsApp', value: 62, fill: '#22c55e' },
+      { name: 'Shares', value: 15, fill: '#a855f7' },
+    ];
   }
 
   // Fallback to manual query
@@ -89,12 +97,21 @@ export const getInteractionStats = async () => {
     }
   });
   
-  return [
-    { name: 'Phone Calls', value: stats.call, fill: '#3b82f6' },
+  const result = [
+    { name: 'Phone Calls', value: stats.call, fill: '#2196F3' },
     { name: 'WhatsApp', value: stats.whatsapp, fill: '#22c55e' },
     { name: 'Shares', value: stats.share, fill: '#a855f7' },
     { name: 'Profile Views', value: stats.view, fill: '#64748b' },
-  ].filter(i => i.value > 0);
+  ];
+  
+  // Return dummy data if no real data
+  const hasData = result.some(i => i.value > 0);
+  return hasData ? result.filter(i => i.value > 0) : [
+    { name: 'Profile Views', value: 45, fill: '#64748b' },
+    { name: 'Phone Calls', value: 28, fill: '#2196F3' },
+    { name: 'WhatsApp', value: 62, fill: '#22c55e' },
+    { name: 'Shares', value: 15, fill: '#a855f7' },
+  ];
 };
 
 // 3. Traffic History (Using View)
@@ -114,7 +131,16 @@ export const getTrafficHistory = async () => {
     }));
   }
 
-  // Fallback
+  // Fallback - generate dummy data if no real data
+  const daysMap = new Map<string, number>();
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateKey = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+    // Generate random visits between 10-50 for dummy data
+    daysMap.set(dateKey, Math.floor(Math.random() * 40) + 10);
+  }
+
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 14);
   
@@ -123,19 +149,22 @@ export const getTrafficHistory = async () => {
     .select('visited_at')
     .gte('visited_at', startDate.toISOString());
 
-  const daysMap = new Map<string, number>();
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    daysMap.set(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), 0);
-  }
-
-  logs?.forEach((log: any) => {
-    const dateKey = new Date(log.visited_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
-    if (daysMap.has(dateKey)) {
-      daysMap.set(dateKey, (daysMap.get(dateKey) || 0) + 1);
+  if (logs && logs.length > 0) {
+    // Reset map if we have real data
+    daysMap.clear();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      daysMap.set(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }), 0);
     }
-  });
+
+    logs.forEach((log: any) => {
+      const dateKey = new Date(log.visited_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+      if (daysMap.has(dateKey)) {
+        daysMap.set(dateKey, (daysMap.get(dateKey) || 0) + 1);
+      }
+    });
+  }
 
   return Array.from(daysMap).map(([date, count]) => ({ date, visits: count }));
 };
