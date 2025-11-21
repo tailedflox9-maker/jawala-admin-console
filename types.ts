@@ -45,7 +45,85 @@ export interface UserTracking {
 export interface BusinessInteraction {
   id: string;
   business_id: string;
-  business_name?: string; // Added this
+  business_name?: string;
   event_type: 'view' | 'call' | 'whatsapp' | 'share';
   created_at: string;
+  device_id?: string;
+  user_name?: string;
+}
+
+// NEW: AI Search Analytics Types
+export interface AiSearchLog {
+  id: string;
+  search_query: string;
+  search_success: boolean;
+  businesses_count: number;
+  response_time_ms?: number;
+  searched_at: string;
+  device_id?: string;
+  user_name?: string;
+}
+
+export interface PopularSearch {
+  search_query: string;
+  search_count: number;
+}
+
+export interface FailedSearch {
+  search_query: string;
+  failure_count: number;
+}
+
+export interface AiSearchStats {
+  total: number;
+  successful: number;
+  successRate: string;
+  avgResponseTime: string;
+}
+
+// Dashboard Stats Type
+export interface DashboardStats {
+  totalVisits: number;
+  totalUsers: number;
+  totalInteractions: number;
+  todayVisits: number;
+  businessCount: number;
+}
+
+// Traffic History Type
+export interface TrafficData {
+  date: string;
+  visits: number;
+  users?: number;
+}
+
+// Interaction Stats Type
+export interface InteractionStat {
+  name: string;
+  value: number;
+  fill: string;
+}
+
+// Business Performance Type
+export interface BusinessPerformance {
+  id: string;
+  name: string;
+  calls: number;
+  whatsapp: number;
+  shares: number;
+  views: number;
+  total: number;
+}
+
+// Live Feed Item Type
+export interface LiveFeedItem {
+  id?: string;
+  type: 'visit' | 'interaction';
+  time: string;
+  user_name?: string;
+  device_id?: string;
+  page_path?: string;
+  event_type?: 'view' | 'call' | 'whatsapp' | 'share';
+  business_id?: string;
+  business_name?: string;
 }
