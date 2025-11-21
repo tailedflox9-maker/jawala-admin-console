@@ -5,7 +5,8 @@ import Overview from './pages/Overview';
 import LiveMonitor from './pages/LiveMonitor';
 import BusinessPerformance from './pages/BusinessPerformance';
 import UserInsights from './pages/UserInsights';
-import AiSearchAnalytics from './pages/AiSearchAnalytics'; // ADD THIS
+import AiSearchAnalytics from './pages/AiSearchAnalytics';
+import DataManagement from './pages/DataManagement'; // <--- IMPORT NEW PAGE
 import { getCurrentUser, supabase } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
 import { Box, CircularProgress } from '@mui/material';
@@ -21,7 +22,6 @@ const App: React.FC = () => {
       setUser(currentUser);
       setLoading(false);
     };
-    
     checkAuth();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -38,15 +38,7 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <Box 
-        sx={{ 
-          minHeight: '100vh', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          bgcolor: 'background.default'
-        }}
-      >
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <CircularProgress size={40} />
       </Box>
     );
@@ -62,7 +54,8 @@ const App: React.FC = () => {
       case 'live': return <LiveMonitor />;
       case 'performance': return <BusinessPerformance />;
       case 'audience': return <UserInsights />;
-      case 'ai-search': return <AiSearchAnalytics />; // ADD THIS
+      case 'ai-search': return <AiSearchAnalytics />;
+      case 'data': return <DataManagement />; // <--- NEW ROUTE
       default: return <Overview />;
     }
   };
