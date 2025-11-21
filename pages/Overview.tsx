@@ -1,36 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { getDashboardStats, getTopSearchesForOverview, getInteractionStats } from '../supabaseClient';
+import { getDashboardStats, getConversionFunnel, getInteractionStats } from '../supabaseClient';
 import { Card, CardContent, Skeleton } from '../components/ui/Primitives';
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
+  FunnelChart, 
+  Funnel, 
+  LabelList, 
   Tooltip, 
   ResponsiveContainer, 
   PieChart, 
   Pie, 
   Cell 
 } from 'recharts';
-import { Box, Typography, Avatar, LinearProgress, Grow } from '@mui/material';
-import { TrendingUp, People, TouchApp, Visibility, ArrowUpward, ArrowDownward, Search, DonutLarge } from '@mui/icons-material';
+import { Box, Typography, Avatar, LinearProgress, Grow, Chip } from '@mui/material';
+import { 
+  TrendingUp, 
+  People, 
+  TouchApp, 
+  Visibility, 
+  ArrowUpward, 
+  ArrowDownward, 
+  DonutLarge, 
+  FilterAlt 
+} from '@mui/icons-material';
 
 const Overview: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
-  const [topSearches, setTopSearches] = useState<any[]>([]);
+  const [funnelData, setFunnelData] = useState<any[]>([]);
   const [interactions, setInteractions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const [s, t, i] = await Promise.all([
+      const [s, f, i] = await Promise.all([
         getDashboardStats(),
-        getTopSearchesForOverview(), // Changed from getTrafficHistory
+        getConversionFunnel(), // New Funnel Data
         getInteractionStats()
       ]);
       setStats(s);
-      setTopSearches(t);
+      setFunnelData(f);
       setInteractions(i);
       setLoading(false);
     };
@@ -102,35 +109,56 @@ const Overview: React.FC = () => {
 
       <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, mb: 4 }}>
         
-        {/* REPLACED TRAFFIC CHART WITH TOP SEARCHES */}
+        {/* === NEW: CONVERSION FUNNEL CHART === */}
         <Grow in timeout={700}>
           <Card elevation={0} sx={{ border: 1, borderColor: 'divider', transition: 'all 0.3s', '&:hover': { boxShadow: 4, borderColor: 'primary.main' } }}>
             <CardContent sx={{ p: 3 }}>
-              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'primary.main', color: 'white' }}><Search fontSize="small" /></Box>
-                <Box>
-                  <Typography variant="h6" fontWeight={700}>Top 5 Search Queries</Typography>
-                  <Typography variant="body2" color="text.secondary">What users are looking for most often</Typography>
+              <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{ p: 1, borderRadius: 2, bgcolor: 'primary.main', color: 'white', boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)' }}>
+                    <FilterAlt fontSize="small" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h6" fontWeight={700}>Conversion Funnel</Typography>
+                    <Typography variant="body2" color="text.secondary">Traffic to Lead Conversion Rate</Typography>
+                  </Box>
                 </Box>
+                
+                {/* Conversion Rate Chip */}
+                {!loading && funnelData.length >= 3 && (
+                  <Chip 
+                    label={`${((funnelData[2].value / funnelData[0].value) * 100).toFixed(1)}% Conversion`} 
+                    color="success" 
+                    size="small"
+                    sx={{ fontWeight: 800 }}
+                  />
+                )}
               </Box>
 
               <Box sx={{ height: 340 }}>
                 {loading ? (
                   <Skeleton variant="rectangular" width="100%" height="100%" />
-                ) : topSearches.length === 0 ? (
-                  <Box sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', color: 'text.secondary', opacity: 0.7 }}>
-                    <Search sx={{ fontSize: 48, mb: 1 }} />
-                    <Typography>No search data available yet</Typography>
-                  </Box>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={topSearches} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
-                      <XAxis type="number" hide />
-                      <YAxis dataKey="name" type="category" width={100} tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, fontWeight: 600 }} axisLine={false} tickLine={false} />
-                      <Tooltip cursor={{ fill: 'hsl(var(--muted)/0.1)' }} contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: 8 }} />
-                      <Bar dataKey="count" fill="#2196F3" radius={[0, 4, 4, 0]} barSize={32} name="Searches" />
-                    </BarChart>
+                    <FunnelChart>
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          borderColor: 'hsl(var(--border))', 
+                          borderRadius: 12, 
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)' 
+                        }} 
+                        itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }} 
+                      />
+                      <Funnel
+                        dataKey="value"
+                        data={funnelData}
+                        isAnimationActive
+                      >
+                        <LabelList position="right" fill="hsl(var(--foreground))" stroke="none" dataKey="name" fontWeight={600} fontSize={12} />
+                        <LabelList position="center" fill="#fff" stroke="none" dataKey="value" fontWeight={800} fontSize={14} />
+                      </Funnel>
+                    </FunnelChart>
                   </ResponsiveContainer>
                 )}
               </Box>
@@ -138,7 +166,7 @@ const Overview: React.FC = () => {
           </Card>
         </Grow>
 
-        {/* FIXED PIE CHART (Handles No Data) */}
+        {/* Pie Chart */}
         <Grow in timeout={800}>
           <Card elevation={0} sx={{ border: 1, borderColor: 'divider', height: '100%', transition: 'all 0.3s', '&:hover': { boxShadow: 4, borderColor: 'primary.main' } }}>
             <CardContent sx={{ p: 3 }}>
