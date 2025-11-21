@@ -33,7 +33,7 @@ const Overview: React.FC = () => {
     const fetchData = async () => {
       const [s, f, i] = await Promise.all([
         getDashboardStats(),
-        getConversionFunnel(), // New Funnel Data
+        getConversionFunnel(),
         getInteractionStats()
       ]);
       setStats(s);
@@ -102,14 +102,17 @@ const Overview: React.FC = () => {
 
       <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, mb: 5 }}>
         <StatCard title="Total Visits" value={stats?.totalVisits || 0} icon={Visibility} colorClass="#2196F3" trend={12.5} />
-        <StatCard title="Active Users" value={stats?.totalUsers || 0} icon={People} colorClass="#FF9800" trend={8.3} />
+        
+        {/* === UPDATED LABEL HERE === */}
+        <StatCard title="Lifetime Unique Users" value={stats?.totalUsers || 0} icon={People} colorClass="#FF9800" trend={8.3} />
+        
         <StatCard title="Interactions" value={stats?.totalInteractions || 0} icon={TouchApp} colorClass="#9C27B0" trend={-2.1} />
         <StatCard title="Today's Visits" value={stats?.todayVisits || 0} icon={TrendingUp} colorClass="#4CAF50" trend={15.7} />
       </Box>
 
       <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, mb: 4 }}>
         
-        {/* === NEW: CONVERSION FUNNEL CHART === */}
+        {/* Funnel Chart */}
         <Grow in timeout={700}>
           <Card elevation={0} sx={{ border: 1, borderColor: 'divider', transition: 'all 0.3s', '&:hover': { boxShadow: 4, borderColor: 'primary.main' } }}>
             <CardContent sx={{ p: 3 }}>
@@ -124,7 +127,6 @@ const Overview: React.FC = () => {
                   </Box>
                 </Box>
                 
-                {/* Conversion Rate Chip */}
                 {!loading && funnelData.length >= 3 && (
                   <Chip 
                     label={`${((funnelData[2].value / funnelData[0].value) * 100).toFixed(1)}% Conversion`} 
