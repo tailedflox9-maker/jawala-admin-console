@@ -27,6 +27,7 @@ export const supabase: SupabaseClient = createClient(supabaseUrl || '', supabase
 // 1. Dashboard Stats
 export const getDashboardStats = async () => {
   try {
+    // Try to get summary view first
     const { data: summary } = await supabase
       .from('analytics_summary')
       .select('*')
@@ -43,7 +44,7 @@ export const getDashboardStats = async () => {
       };
     }
 
-    // Fallback
+    // Fallback to exact counts
     const today = new Date().toISOString().split('T')[0];
     const [visits, users, interactions, todayVisits] = await Promise.all([
       supabase.from('visit_logs').select('*', { count: 'exact', head: true }),
@@ -64,26 +65,44 @@ export const getDashboardStats = async () => {
   }
 };
 
-// 2. Interaction Stats
+// 2. Interaction Stats (FIXED: Reads directly from table)
 export const getInteractionStats = async () => {
   try {
-    const { data: viewData } = await supabase.from('interaction_stats').select('*').limit(1);
+    const { data, error } = await supabase
+      .from('business_interactions')
+      .select('event_type');
+    
+    if (error) throw error;
+    if (!data || data.length === 0) return [];
 
-    if (viewData && viewData.length > 0) {
-      const stats = viewData[0];
-      const result = [
-        { name: 'Profile Views', value: stats.view_count || 0, fill: '#64748b' },
-        { name: 'Phone Calls', value: stats.call_count || 0, fill: '#2196F3' },
-        { name: 'WhatsApp', value: stats.whatsapp_count || 0, fill: '#22c55e' },
-        { name: 'Shares', value: stats.share_count || 0, fill: '#a855f7' },
-      ];
-      return result.some(i => i.value > 0) ? result.filter(i => i.value > 0) : [];
-    }
+    // Manual count to ensure accuracy without relying on SQL Views
+    const stats = { call: 0, whatsapp: 0, share: 0, view: 0 };
+    
+    data.forEach((row: any) => {
+      const type = row.event_type;
+      if (type === 'call') stats.call++;
+      else if (type === 'whatsapp') stats.whatsapp++;
+      else if (type === 'share') stats.share++;
+      else if (type === 'view') stats.view++;
+    });
+    
+    const result = [
+      { name: 'Phone Calls', value: stats.call, fill: '#2196F3' },
+      { name: 'WhatsApp', value: stats.whatsapp, fill: '#22c55e' },
+      { name: 'Shares', value: stats.share, fill: '#a855f7' },
+      { name: 'Profile Views', value: stats.view, fill: '#64748b' },
+    ];
+    
+    // Only return items that have data
+    return result.filter(i => i.value > 0);
+
+  } catch (error) {
+    console.error('Error fetching interaction stats:', error);
     return [];
-  } catch { return []; }
+  }
 };
 
-// 3. NEW: Conversion Funnel Data
+// 3. Conversion Funnel Data
 export const getConversionFunnel = async () => {
   try {
     // Step 1: Total Visits (Awareness)
@@ -117,10 +136,12 @@ export const getConversionFunnel = async () => {
 // 4. Top Business IDs
 export const getTopBusinessIds = async () => {
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('business_interactions')
       .select('business_id, business_name, event_type');
     
+    if (error) throw error;
+
     const counts: Record<string, any> = {};
     data?.forEach((row: any) => {
       const id = row.business_id;
@@ -128,14 +149,18 @@ export const getTopBusinessIds = async () => {
         counts[id] = { id, name: row.business_name || `Business ${id.substring(0, 8)}`, calls: 0, whatsapp: 0, shares: 0, views: 0, total: 0 };
       }
       if (row.business_name && counts[id].name.startsWith('Business ')) counts[id].name = row.business_name;
+      
       if (row.event_type === 'call') counts[id].calls++;
       else if (row.event_type === 'whatsapp') counts[id].whatsapp++;
       else if (row.event_type === 'share') counts[id].shares++;
       else counts[id].views++;
       counts[id].total++;
     });
+
     return Object.values(counts).sort((a: any, b: any) => b.total - a.total).slice(0, 15);
-  } catch { return []; }
+  } catch (error) {
+    return [];
+  }
 };
 
 // 5. Top Users
@@ -156,7 +181,7 @@ export const getLiveFeed = async () => {
       ...(interactions.data || []).map((i: any) => ({ ...i, type: 'interaction', time: i.created_at }))
     ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
     return feed.slice(0, 50);
-  } catch { return []; }
+  } catch (error) { return []; }
 };
 
 // 7. Live User Count
