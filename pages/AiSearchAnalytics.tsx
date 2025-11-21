@@ -30,6 +30,9 @@ import {
   CalendarToday,
   CheckCircle,
   Cancel,
+  Devices,
+  Psychology,
+  Storefront
 } from '@mui/icons-material';
 
 const AiSearchAnalytics: React.FC = () => {
@@ -117,7 +120,7 @@ const AiSearchAnalytics: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Stats Cards - MOBILE OPTIMIZED */}
+      {/* Stats Cards */}
       <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
         <Grid item xs={6} sm={6} md={3}>
           <Card elevation={0} sx={{ border: 1, borderColor: 'divider', height: '100%' }}>
@@ -450,7 +453,7 @@ const AiSearchAnalytics: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* Recent Searches - MOBILE OPTIMIZED WITH USER INFO */}
+      {/* Recent Searches */}
       <Card elevation={0} sx={{ border: 1, borderColor: 'divider' }}>
         <CardContent sx={{ p: { xs: 2, sm: 2.5, md: 3 } }}>
           <Typography 
@@ -472,7 +475,7 @@ const AiSearchAnalytics: React.FC = () => {
             Latest 50 AI searches with full details including who searched
           </Typography>
 
-          {/* Mobile Card View */}
+          {/* Search List */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {searches.map((search, idx) => (
               <Paper
@@ -613,7 +616,7 @@ const AiSearchAnalytics: React.FC = () => {
                   </Box>
                 </Box>
 
-                {/* Expandable Details */}
+                {/* UPDATED: Expandable Details with AI Response */}
                 <Collapse in={expandedCard === idx} timeout="auto">
                   <Box 
                     sx={{ 
@@ -623,75 +626,124 @@ const AiSearchAnalytics: React.FC = () => {
                       borderColor: 'divider'
                     }}
                   >
-                    <Typography 
-                      variant="caption" 
-                      color="text.secondary"
-                      sx={{ 
-                        display: 'block',
-                        fontSize: { xs: '0.65rem', sm: '0.7rem' },
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        mb: 1,
-                        letterSpacing: 0.5
-                      }}
-                    >
-                      Additional Details
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Person sx={{ fontSize: 16, color: 'text.secondary' }} />
+                    <Grid container spacing={3}>
+                      {/* Left Side: Metadata */}
+                      <Grid item xs={12} md={5}>
                         <Typography 
-                          variant="caption"
-                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
+                          variant="caption" 
+                          color="text.secondary"
+                          sx={{ 
+                            display: 'block', 
+                            fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                            fontWeight: 700, 
+                            textTransform: 'uppercase', 
+                            mb: 1.5,
+                            letterSpacing: 0.5
+                          }}
                         >
-                          <strong>User:</strong> {search.user_name || 'Anonymous User'}
+                          Search Metadata
                         </Typography>
-                      </Box>
-                      
-                      {search.device_id && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography 
-                            variant="caption"
-                            sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
-                          >
-                            <strong>Device:</strong> {search.device_id.substring(0, 20)}...
-                          </Typography>
-                        </Box>
-                      )}
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CalendarToday sx={{ fontSize: 16, color: 'text.secondary' }} />
-                        <Typography 
-                          variant="caption"
-                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
-                        >
-                          <strong>Time:</strong> {new Date(search.searched_at).toLocaleString()}
-                        </Typography>
-                      </Box>
+                        
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Person sx={{ fontSize: 18, color: 'text.secondary' }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.8rem' }}>
+                              <strong>User:</strong> {search.user_name || 'Anonymous'}
+                            </Typography>
+                          </Box>
 
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Search sx={{ fontSize: 16, color: 'text.secondary' }} />
-                        <Typography 
-                          variant="caption"
-                          sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
-                        >
-                          <strong>Results Found:</strong> {search.businesses_count} businesses
-                        </Typography>
-                      </Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Devices sx={{ fontSize: 18, color: 'text.secondary' }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.8rem' }}>
+                              <strong>Device:</strong> {search.device_id ? `${search.device_id.substring(0,16)}...` : 'Unknown'}
+                            </Typography>
+                          </Box>
 
-                      {search.response_time_ms && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <AccessTime sx={{ fontSize: 16, color: 'text.secondary' }} />
-                          <Typography 
-                            variant="caption"
-                            sx={{ fontSize: { xs: '0.75rem', sm: '0.813rem' } }}
-                          >
-                            <strong>Response Time:</strong> {search.response_time_ms}ms
-                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Psychology sx={{ fontSize: 18, color: 'text.secondary' }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.8rem' }}>
+                              <strong>Model Used:</strong> {search.model_used || 'Unknown'}
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CalendarToday sx={{ fontSize: 18, color: 'text.secondary' }} />
+                            <Typography variant="caption" sx={{ fontSize: '0.8rem' }}>
+                              <strong>Time:</strong> {new Date(search.searched_at).toLocaleString()}
+                            </Typography>
+                          </Box>
                         </Box>
-                      )}
-                    </Box>
+                      </Grid>
+
+                      {/* Right Side: AI Response & Business Findings */}
+                      <Grid item xs={12} md={7}>
+                        <Typography 
+                          variant="caption" 
+                          color="text.secondary"
+                          sx={{ 
+                            display: 'block', 
+                            fontSize: { xs: '0.65rem', sm: '0.7rem' },
+                            fontWeight: 700, 
+                            textTransform: 'uppercase', 
+                            mb: 1,
+                            letterSpacing: 0.5
+                          }}
+                        >
+                          AI Response Summary
+                        </Typography>
+                        <Paper 
+                          variant="outlined" 
+                          sx={{ 
+                            p: 2, 
+                            bgcolor: 'background.paper', 
+                            borderRadius: 2,
+                            mb: 2,
+                            borderLeft: 4,
+                            borderLeftColor: 'primary.main'
+                          }}
+                        >
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              fontStyle: 'italic', 
+                              color: 'text.secondary',
+                              lineHeight: 1.6
+                            }}
+                          >
+                            "{search.ai_response_summary || 'No summary text returned.'}"
+                          </Typography>
+                        </Paper>
+                        
+                        {search.businesses_found && search.businesses_found.length > 0 && (
+                           <Box>
+                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                               <Storefront sx={{ fontSize: 16, color: 'text.secondary' }} />
+                               <Typography 
+                                 variant="caption" 
+                                 sx={{ fontWeight: 700, fontSize: '0.7rem', textTransform: 'uppercase', color: 'text.secondary' }}
+                               >
+                                 Found Businesses (IDs):
+                               </Typography>
+                             </Box>
+                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                               {search.businesses_found.map((bid: string) => (
+                                 <Chip 
+                                   key={bid} 
+                                   label={bid.substring(0, 8)} 
+                                   size="small" 
+                                   variant="outlined"
+                                   sx={{ 
+                                     fontSize: '0.65rem', 
+                                     fontFamily: 'monospace',
+                                     bgcolor: 'background.paper'
+                                   }} 
+                                 />
+                               ))}
+                             </Box>
+                           </Box>
+                        )}
+                      </Grid>
+                    </Grid>
                   </Box>
                 </Collapse>
               </Paper>
