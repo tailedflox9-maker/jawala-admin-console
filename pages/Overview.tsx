@@ -323,6 +323,16 @@ const Overview: React.FC = () => {
               <Box sx={{ height: 240, position: 'relative' }}>
                 {loading ? (
                   <Skeleton variant="circular" width="100%" height="100%" />
+                ) : interactions.length === 0 ? (
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    height: '100%',
+                    color: 'text.secondary'
+                  }}>
+                    <Typography variant="body2">No interaction data yet</Typography>
+                  </Box>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -333,6 +343,7 @@ const Overview: React.FC = () => {
                         paddingAngle={4}
                         dataKey="value"
                         stroke="none"
+                        label={false}
                       >
                         {interactions.map((entry: any, index: number) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -354,7 +365,7 @@ const Overview: React.FC = () => {
                   </ResponsiveContainer>
                 )}
                 
-                {!loading && (
+                {!loading && interactions.length > 0 && (
                   <Box 
                     sx={{ 
                       position: 'absolute', 
@@ -366,7 +377,7 @@ const Overview: React.FC = () => {
                     }}
                   >
                     <Typography variant="h3" fontWeight={900}>
-                      {stats?.totalInteractions || 0}
+                      {interactions.reduce((sum, i) => sum + i.value, 0)}
                     </Typography>
                     <Typography 
                       variant="caption" 
@@ -385,16 +396,25 @@ const Overview: React.FC = () => {
 
               {/* Legend with progress bars */}
               <Box sx={{ mt: 3 }}>
-                {!loading && interactions.map((item: any, index: number) => {
+                {!loading && interactions.length > 0 && interactions.map((item: any, index: number) => {
                   const total = interactions.reduce((sum, i) => sum + i.value, 0);
-                  const percentage = ((item.value / total) * 100).toFixed(0);
+                  const percentage = total > 0 ? ((item.value / total) * 100).toFixed(0) : '0';
                   
                   return (
                     <Box key={index} sx={{ mb: 1.5 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                        <Typography variant="body2" fontWeight={600} fontSize="0.813rem">
-                          {item.name}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Box sx={{ 
+                            width: 8, 
+                            height: 8, 
+                            borderRadius: '50%', 
+                            bgcolor: item.fill,
+                            flexShrink: 0
+                          }} />
+                          <Typography variant="body2" fontWeight={600} fontSize="0.813rem">
+                            {item.name}
+                          </Typography>
+                        </Box>
                         <Typography variant="body2" fontWeight={700} fontSize="0.813rem">
                           {percentage}%
                         </Typography>
