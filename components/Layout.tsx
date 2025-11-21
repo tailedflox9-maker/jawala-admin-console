@@ -16,8 +16,6 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  useMediaQuery,
-  useTheme,
   CssBaseline,
   ThemeProvider,
   createTheme,
@@ -52,20 +50,18 @@ const Layout: React.FC<LayoutProps> = ({ user, currentView, onNavigate, children
 
   const drawerWidth = 280;
 
-const menuItems = [
-  { id: 'overview', label: 'Overview', icon: <Dashboard /> },
-  { id: 'live', label: 'Live Monitor', icon: <Visibility /> },
-  { id: 'performance', label: 'Business Performance', icon: <TrendingUp /> },
-  { id: 'audience', label: 'User Insights', icon: <People /> },
-  { id: 'ai-search', label: 'AI Search Analytics', icon: <Search /> }, // ADD THIS LINE
-];
+  const menuItems = [
+    { id: 'overview', label: 'Overview', icon: <Dashboard /> },
+    { id: 'live', label: 'Live Monitor', icon: <Visibility /> },
+    { id: 'performance', label: 'Business Performance', icon: <TrendingUp /> },
+    { id: 'audience', label: 'User Insights', icon: <People /> },
+    { id: 'ai-search', label: 'AI Search Analytics', icon: <Search /> },
+  ];
 
-  // Prevent flickering by mounting after initial render
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Apply dark mode to document
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
     if (darkMode) {
@@ -78,9 +74,7 @@ const menuItems = [
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
-      primary: {
-        main: '#3b82f6',
-      },
+      primary: { main: '#3b82f6' },
       background: {
         default: darkMode ? '#000000' : '#f8fafc',
         paper: darkMode ? '#000000' : '#ffffff',
@@ -91,29 +85,24 @@ const menuItems = [
         secondary: darkMode ? '#a0a0a0' : '#64748b',
       },
     },
-    typography: {
-      fontFamily: 'Roboto, sans-serif',
-    },
+    typography: { fontFamily: 'Plus Jakarta Sans, Roboto, sans-serif' },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
-          body: {
-            transition: 'none !important',
-          },
+          body: { transition: 'none !important' },
         },
       },
-      MuiCard: {
-        defaultProps: {
-          elevation: 0,
-        },
-      },
-      MuiPaper: {
+      MuiCard: { defaultProps: { elevation: 0 } },
+      MuiPaper: { styleOverrides: { root: { transition: 'none !important' } } },
+      // Fix Drawer border to match branding
+      MuiDrawer: {
         styleOverrides: {
-          root: {
-            transition: 'none !important',
-          },
-        },
-      },
+          paper: {
+            borderRight: '1px solid',
+            borderColor: darkMode ? '#1a1a1a' : 'rgba(0,0,0,0.08)',
+          }
+        }
+      }
     },
   });
 
@@ -141,11 +130,27 @@ const menuItems = [
 
   const drawer = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
-      <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h5" fontWeight="bold" color="primary">
-          Jawala Admin
-        </Typography>
-      </Box>
+      {/* Sidebar Header - Aligned with AppBar height */}
+      <Toolbar sx={{ px: 3, borderBottom: 1, borderColor: 'divider', minHeight: 64 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+           <Box 
+             sx={{ 
+               width: 32, 
+               height: 32, 
+               bgcolor: 'primary.main', 
+               borderRadius: 1, 
+               display: 'flex', 
+               alignItems: 'center', 
+               justifyContent: 'center'
+             }}
+           >
+             <Typography variant="body2" sx={{ color: 'white', fontWeight: 900 }}>JA</Typography>
+           </Box>
+           <Typography variant="h6" fontWeight={800} color="text.primary" sx={{ letterSpacing: '-0.02em' }}>
+            Jawala Admin
+          </Typography>
+        </Box>
+      </Toolbar>
 
       <List sx={{ flex: 1, pt: 2, px: 2 }}>
         {menuItems.map((item) => (
@@ -162,15 +167,11 @@ const menuItems = [
                 '&.Mui-selected': {
                   backgroundColor: 'primary.main',
                   color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark',
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: 'white',
-                  },
+                  '&:hover': { backgroundColor: 'primary.dark' },
+                  '& .MuiListItemIcon-root': { color: 'white' },
                 },
                 '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'action.hover',
+                  backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
                 },
               }}
             >
@@ -185,7 +186,7 @@ const menuItems = [
               <ListItemText 
                 primary={item.label}
                 primaryTypographyProps={{
-                  fontWeight: currentView === item.id ? 600 : 400,
+                  fontWeight: currentView === item.id ? 600 : 500,
                   fontSize: '0.95rem',
                 }}
               />
@@ -201,13 +202,13 @@ const menuItems = [
           gap: 1.5, 
           p: 1.5, 
           borderRadius: 2, 
-          bgcolor: darkMode ? 'rgba(255, 255, 255, 0.03)' : 'action.hover' 
+          bgcolor: darkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.04)' 
         }}>
-          <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
+          <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36, fontSize: '0.9rem', fontWeight: 700 }}>
             {user.email?.charAt(0).toUpperCase()}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography variant="body2" fontWeight="medium" noWrap>
+            <Typography variant="body2" fontWeight={700} noWrap>
               {user.email?.split('@')[0]}
             </Typography>
             <Typography variant="caption" color="text.secondary" fontSize="0.7rem">
@@ -219,28 +220,26 @@ const menuItems = [
     </Box>
   );
 
-  // Don't render until mounted to prevent flickering
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-        {/* App Bar */}
+        {/* AppBar - Shifted right on Desktop */}
         <AppBar
           position="fixed"
           elevation={0}
           sx={{
-            zIndex: (theme) => theme.zIndex.drawer + 1,
+            width: { md: `calc(100% - ${drawerWidth}px)` },
+            ml: { md: `${drawerWidth}px` },
             bgcolor: 'background.paper',
             color: 'text.primary',
             borderBottom: 1,
             borderColor: 'divider',
           }}
         >
-          <Toolbar>
+          <Toolbar sx={{ minHeight: 64 }}>
             <IconButton
               color="inherit"
               edge="start"
@@ -250,7 +249,7 @@ const menuItems = [
               <MenuIcon />
             </IconButton>
 
-            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
               {menuItems.find((item) => item.id === currentView)?.label || 'Dashboard'}
             </Typography>
 
@@ -259,7 +258,7 @@ const menuItems = [
             </IconButton>
 
             <IconButton onClick={handleMenuOpen} color="inherit">
-              <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
+              <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32, fontSize: '0.85rem', fontWeight: 700 }}>
                 {user.email?.charAt(0).toUpperCase()}
               </Avatar>
             </IconButton>
@@ -270,19 +269,11 @@ const menuItems = [
               onClose={handleMenuClose}
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-              PaperProps={{
-                sx: {
-                  mt: 1,
-                  minWidth: 200,
-                },
-              }}
+              PaperProps={{ sx: { mt: 1, minWidth: 200 } }}
             >
               <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
                 <Typography variant="body2" fontWeight="medium">
                   {user.email}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Administrator
                 </Typography>
               </Box>
               <MenuItem onClick={handleLogout} sx={{ mt: 1 }}>
@@ -298,36 +289,24 @@ const menuItems = [
           component="nav"
           sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
         >
-          {/* Mobile drawer */}
           <Drawer
             variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
+            ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: 'block', md: 'none' },
-              '& .MuiDrawer-paper': {
-                boxSizing: 'border-box',
-                width: drawerWidth,
-              },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
             }}
           >
             {drawer}
           </Drawer>
 
-          {/* Desktop drawer */}
           <Drawer
             variant="permanent"
             sx={{
               display: { xs: 'none', md: 'block' },
-              '& .MuiDrawer-paper': {
-                boxSizing: 'border-box',
-                width: drawerWidth,
-                borderRight: 1,
-                borderColor: 'divider',
-              },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderRight: 1, borderColor: 'divider' },
             }}
             open
           >
@@ -335,7 +314,7 @@ const menuItems = [
           </Drawer>
         </Box>
 
-        {/* Main content */}
+        {/* Main Content */}
         <Box
           component="main"
           sx={{
@@ -346,7 +325,7 @@ const menuItems = [
             bgcolor: 'background.default',
           }}
         >
-          <Toolbar />
+          <Toolbar sx={{ minHeight: 64 }} /> {/* Spacer to push content below AppBar */}
           <Box sx={{ mt: 2 }}>
             {children}
           </Box>
