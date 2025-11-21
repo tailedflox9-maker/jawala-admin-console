@@ -15,7 +15,7 @@ const supabaseUrl = getEnv('VITE_SUPABASE_URL');
 const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('❌ CRITICAL: Missing Supabase keys.');
+  console.error('❌ CRITICAL: Missing Supabase keys. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment variables.');
 }
 
 export const supabase: SupabaseClient = createClient(supabaseUrl || '', supabaseAnonKey || '');
@@ -65,7 +65,7 @@ export const getDashboardStats = async () => {
   }
 };
 
-// 2. Interaction Stats (FIXED: Reads directly from table)
+// 2. Interaction Stats (Reads directly from table)
 export const getInteractionStats = async () => {
   try {
     const { data, error } = await supabase
@@ -75,7 +75,6 @@ export const getInteractionStats = async () => {
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // Manual count to ensure accuracy without relying on SQL Views
     const stats = { call: 0, whatsapp: 0, share: 0, view: 0 };
     
     data.forEach((row: any) => {
@@ -93,9 +92,7 @@ export const getInteractionStats = async () => {
       { name: 'Profile Views', value: stats.view, fill: '#64748b' },
     ];
     
-    // Only return items that have data
     return result.filter(i => i.value > 0);
-
   } catch (error) {
     console.error('Error fetching interaction stats:', error);
     return [];
@@ -105,32 +102,49 @@ export const getInteractionStats = async () => {
 // 3. Conversion Funnel Data
 export const getConversionFunnel = async () => {
   try {
-    // Step 1: Total Visits (Awareness)
-    const { count: visits } = await supabase
-      .from('visit_logs')
-      .select('*', { count: 'exact', head: true });
-
-    // Step 2: Business Profile Views (Interest)
-    const { count: views } = await supabase
-      .from('business_interactions')
-      .select('*', { count: 'exact', head: true })
-      .eq('event_type', 'view');
-
-    // Step 3: Leads Generated (Action: Call/Whatsapp/Share)
-    const { count: leads } = await supabase
-      .from('business_interactions')
-      .select('*', { count: 'exact', head: true })
-      .in('event_type', ['call', 'whatsapp', 'share']);
+    const { count: visits } = await supabase.from('visit_logs').select('*', { count: 'exact', head: true });
+    const { count: views } = await supabase.from('business_interactions').select('*', { count: 'exact', head: true }).eq('event_type', 'view');
+    const { count: leads } = await supabase.from('business_interactions').select('*', { count: 'exact', head: true }).in('event_type', ['call', 'whatsapp', 'share']);
 
     return [
-      { name: 'App Visits', value: visits || 0, fill: '#64748b' },     // Grey-blue
-      { name: 'Profiles Viewed', value: views || 0, fill: '#2196F3' }, // Brand Blue
-      { name: 'Leads (Calls/WA)', value: leads || 0, fill: '#22c55e' } // Success Green
+      { name: 'App Visits', value: visits || 0, fill: '#64748b' },
+      { name: 'Profiles Viewed', value: views || 0, fill: '#2196F3' },
+      { name: 'Leads (Calls/WA)', value: leads || 0, fill: '#22c55e' }
     ];
-  } catch (error) {
-    console.error('Error fetching funnel:', error);
-    return [];
-  }
+  } catch (error) { return []; }
+};
+
+// 3b. Daily Engagement Trend
+export const getDailyEngagementTrend = async () => {
+  try {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 14);
+
+    const { data, error } = await supabase
+      .from('business_interactions')
+      .select('created_at, event_type')
+      .gte('created_at', startDate.toISOString())
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    const daysMap = new Map<string, number>();
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); 
+      daysMap.set(key, 0);
+    }
+
+    data?.forEach((item: any) => {
+      const dateKey = new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      if (daysMap.has(dateKey)) {
+        daysMap.set(dateKey, (daysMap.get(dateKey) || 0) + 1);
+      }
+    });
+
+    return Array.from(daysMap).map(([date, count]) => ({ date, count }));
+  } catch (error) { return []; }
 };
 
 // 4. Top Business IDs
@@ -158,9 +172,7 @@ export const getTopBusinessIds = async () => {
     });
 
     return Object.values(counts).sort((a: any, b: any) => b.total - a.total).slice(0, 15);
-  } catch (error) {
-    return [];
-  }
+  } catch (error) { return []; }
 };
 
 // 5. Top Users
@@ -210,6 +222,69 @@ export const getPopularSearches = async (limit: number = 15) => {
 export const getFailedSearches = async (limit: number = 15) => {
   const { data } = await supabase.from('failed_searches').select('*').limit(limit);
   return data || [];
+};
+
+// ============================================
+// DATA MANAGEMENT & CLEANUP (NEW)
+// ============================================
+
+// 10. Get Row Counts
+export const getDatabaseUsage = async () => {
+  try {
+    const [visits, interactions, aiLogs, users] = await Promise.all([
+      supabase.from('visit_logs').select('*', { count: 'exact', head: true }),
+      supabase.from('business_interactions').select('*', { count: 'exact', head: true }),
+      supabase.from('ai_search_logs').select('*', { count: 'exact', head: true }),
+      supabase.from('user_tracking').select('*', { count: 'exact', head: true }),
+    ]);
+
+    return {
+      visit_logs: visits.count || 0,
+      business_interactions: interactions.count || 0,
+      ai_search_logs: aiLogs.count || 0,
+      unique_users: users.count || 0,
+    };
+  } catch (error) {
+    console.error('Error fetching usage:', error);
+    return null;
+  }
+};
+
+// 11. Download Table Data
+export const downloadTableData = async (tableName: string) => {
+  try {
+    const { data, error } = await supabase.from(tableName).select('*').csv();
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error(`Error downloading ${tableName}:`, error);
+    return null;
+  }
+};
+
+// 12. Cleanup Old Data
+export const cleanupOldData = async (monthsToKeep: number) => {
+  const dateThreshold = new Date();
+  dateThreshold.setMonth(dateThreshold.getMonth() - monthsToKeep);
+  const isoDate = dateThreshold.toISOString();
+
+  const results = { visitsDeleted: 0, interactionsDeleted: 0, aiLogsDeleted: 0 };
+
+  try {
+    const { count: vCount } = await supabase.from('visit_logs').delete({ count: 'exact' }).lt('visited_at', isoDate);
+    results.visitsDeleted = vCount || 0;
+
+    const { count: iCount } = await supabase.from('business_interactions').delete({ count: 'exact' }).lt('created_at', isoDate);
+    results.interactionsDeleted = iCount || 0;
+
+    const { count: aCount } = await supabase.from('ai_search_logs').delete({ count: 'exact' }).lt('searched_at', isoDate);
+    results.aiLogsDeleted = aCount || 0;
+    
+    return results;
+  } catch (error) {
+    console.error('Error cleaning up data:', error);
+    throw error;
+  }
 };
 
 // Auth
